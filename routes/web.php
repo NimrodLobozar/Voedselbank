@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\FoodStorageController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -20,5 +21,8 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::post('/toggle-maintenance', [MaintenanceController::class, 'toggle'])->name('toggle.maintenance');
+
+// Vervang ProductController door FoodStorageController
+Route::resource('foodstorages', FoodStorageController::class);
 
 require __DIR__ . '/auth.php';
