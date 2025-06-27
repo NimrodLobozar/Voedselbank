@@ -2,8 +2,8 @@
     <div class="container mx-auto px-4 max-w-7xl">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div>
-                <h3 class="text-gray-600 dark:text-gray-100 text-lg font-semibold mb-4">Rijschool Vierkantewielen</h3>
-                <p class="text-sm text-gray-600 dark:text-gray-300">Rijschool Vierkantewielen is een professionele
+                <h3 class="text-gray-600 dark:text-gray-100 text-lg font-semibold mb-4">Voedselbank</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-300">Voedselbank is een professionele
                     rijschool die zich richt
                     op het leveren van kwalitatief hoogwaardige rijopleiding. Wij streven ernaar om onze leerlingen op
                     een veilige en effectieve manier klaar te stomen voor het behalen van hun rijbewijs.</p>
@@ -43,7 +43,7 @@
             </div>
         </div>
         <div class="text-center mt-8 text-gray-600 dark:text-gray-100">
-            <p>&copy; {{ date('Y') }} Rijschool Vierkantewielen. Alle rechten voorbehouden.</p>
+            <p>&copy; {{ date('Y') }} Voedselbank. Alle rechten voorbehouden.</p>
         </div>
     </div>
 </footer>

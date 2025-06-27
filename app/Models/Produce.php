@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Produce extends Model
 {
@@ -51,8 +51,8 @@ class Produce extends Model
     public function foodPackages()
     {
         return $this->belongsToMany(FoodPackage::class, 'food_package_produce')
-                    ->withPivot('quantity')
-                    ->withTimestamps();
+            ->withPivot('quantity')
+            ->withTimestamps();
     }
 
     /**
@@ -61,9 +61,9 @@ class Produce extends Model
     public function getBarcodeAttribute()
     {
         // Generate a barcode-like number: category code + padded ID + check digit
-        $categoryCode = match($this->category) {
+        $categoryCode = match ($this->category) {
             'Groente' => '01',
-            'Fruit' => '02', 
+            'Fruit' => '02',
             'Vlees' => '03',
             'Zuivel' => '04',
             'Granen' => '05',
@@ -73,14 +73,14 @@ class Produce extends Model
             'Overig' => '09',
             default => '00'
         };
-        
+
         // Pad the ID to 6 digits
         $paddedId = str_pad($this->id, 6, '0', STR_PAD_LEFT);
-        
+
         // Generate a simple check digit (sum of all digits mod 10)
         $digits = $categoryCode . $paddedId;
         $checkDigit = array_sum(str_split($digits)) % 10;
-        
+
         return $categoryCode . $paddedId . $checkDigit;
     }
 
@@ -90,10 +90,10 @@ class Produce extends Model
     public function getFormattedBarcodeAttribute()
     {
         $barcode = $this->barcode;
-        return substr($barcode, 0, 2) . ' ' . 
-               substr($barcode, 2, 3) . ' ' . 
-               substr($barcode, 5, 3) . ' ' . 
-               substr($barcode, 8, 1);
+        return substr($barcode, 0, 2) . ' ' .
+            substr($barcode, 2, 3) . ' ' .
+            substr($barcode, 5, 3) . ' ' .
+            substr($barcode, 8, 1);
     }
 
     /**
@@ -103,13 +103,13 @@ class Produce extends Model
     {
         // Remove spaces and get just the numbers
         $cleanBarcode = preg_replace('/\s+/', '', $barcodeInput);
-        
+
         // Extract the ID part (positions 2-7, remove leading zeros)
         if (strlen($cleanBarcode) >= 8) {
             $idPart = substr($cleanBarcode, 2, 6);
             return (int) ltrim($idPart, '0') ?: null;
         }
-        
+
         return null;
 
     public function foodPackages()

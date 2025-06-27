@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Rijschool Vierkantewielen</title>
+    <title>Voedselbank</title>
     <!-- favicon -->
     <link rel="icon" href="{{ asset('img/favicon.ico') }}" type="image/x-icon">
     <link rel="apple-touch-icon" href="/apple-touch-icon.webp">

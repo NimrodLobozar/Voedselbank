@@ -15,7 +15,10 @@ class ProduceFactory extends Factory
     {
         // Create suppliers if they don't exist
         $this->ensureSuppliersExist();
-        
+
+        // Ensure FoodStorage exists
+        $this->ensureFoodStoragesExist();
+
         // Get random existing supplier and storage IDs
         $supplierIds = Supplier::pluck('id')->toArray();
         $storageIds = FoodStorage::pluck('id')->toArray();
@@ -24,7 +27,7 @@ class ProduceFactory extends Factory
 
         return [
             'supplier_id' => $this->faker->randomElement($supplierIds),
-            'food_storage_id' => $this->faker->randomElement($storageIds ?: [1]),
+            'food_storage_id' => $this->faker->randomElement($storageIds),
             'name' => $this->faker->word(),
             'brand' => $this->faker->optional()->company(),
             'category' => $this->faker->randomElement(['Groente', 'Fruit', 'Vlees', 'Zuivel', 'Granen', 'Conserven', 'Diepvries', 'Brood', 'Overig']),
@@ -87,6 +90,17 @@ class ProduceFactory extends Factory
             foreach ($testSuppliers as $supplier) {
                 Supplier::create($supplier);
             }
+        }
+    }
+
+    /**
+     * Ensure test food storages exist
+     */
+    private function ensureFoodStoragesExist(): void
+    {
+        if (FoodStorage::count() === 0) {
+            // Create some test food storage records
+            FoodStorage::factory()->count(3)->create();
         }
     }
 }

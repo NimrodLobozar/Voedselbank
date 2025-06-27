@@ -143,12 +143,12 @@ class DatabaseSeeder extends Seeder
         FoodPackage::factory(10)->create();
 
         // Create produce items using factory (includes test data)
-     
+        Produce::factory(15)->create();
 
         // Create produce items manually to ensure datetime fields are set
         $suppliers = Supplier::pluck('id')->toArray();
         $storages = FoodStorage::pluck('id')->toArray();
-        
+
         // Realistische producten per categorie
         $productenData = [
             'Groente' => [
@@ -211,13 +211,13 @@ class DatabaseSeeder extends Seeder
                 'Zout' => ['units' => ['pakken', 'kg'], 'brands' => ['Zeezout', 'Keukenzout', 'AH']]
             ]
         ];
-        
+
         for ($i = 0; $i < 15; $i++) {
             $now = now();
             $category = fake()->randomElement(['Groente', 'Fruit', 'Vlees', 'Zuivel', 'Granen', 'Conserven', 'Diepvries', 'Brood', 'Overig']);
             $productName = fake()->randomElement(array_keys($productenData[$category]));
             $productData = $productenData[$category][$productName];
-            
+
             Produce::create([
                 'supplier_id' => fake()->randomElement($suppliers),
                 'food_storage_id' => fake()->randomElement($storages),

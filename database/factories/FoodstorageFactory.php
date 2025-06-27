@@ -18,7 +18,7 @@ class FoodstorageFactory extends Factory
     {
         $storageTypes = ['Refrigerated', 'Frozen', 'Dry', 'Fresh'];
         $storageType = $this->faker->randomElement($storageTypes);
-        
+
         // Set temperature ranges based on storage type
         $tempRanges = [
             'Refrigerated' => ['min' => 2.0, 'max' => 8.0],
@@ -26,16 +26,16 @@ class FoodstorageFactory extends Factory
             'Dry' => ['min' => 15.0, 'max' => 25.0],
             'Fresh' => ['min' => 10.0, 'max' => 18.0],
         ];
-        
+
         $tempRange = $tempRanges[$storageType];
-        
+
         $storageNames = [
             'Refrigerated' => ['Koelruimte A', 'Koelruimte B', 'Zuivel Koeling', 'Vlees Koeling'],
             'Frozen' => ['Vriesruimte 1', 'Vriesruimte 2', 'Diepvries Hal'],
             'Dry' => ['Droge Opslag', 'Conserven Magazijn', 'Granen Hal', 'Hoofdmagazijn'],
             'Fresh' => ['Verse Producten', 'Groente Ruimte', 'Fruit Zone', 'Brood Opslag']
         ];
-        
+
         return [
             'name' => $this->faker->randomElement($storageNames[$storageType]) . ' ' . $this->faker->randomElement(['Noord', 'Zuid', 'Oost', 'West']),
             'location' => $this->faker->streetAddress . ', ' . $this->faker->postcode . ' ' . $this->faker->city,
