@@ -62,19 +62,12 @@ class FoodPackageController extends Controller
     ]);
 
     $produceItems = [];
-    $shortCodes = [];
     foreach ($validated['produce'] as $item) {
         if (isset($item['id']) && isset($item['quantity']) && $item['id'] && $item['quantity']) {
             $produceItems[] = [
                 'id' => $item['id'],
                 'amount' => $item['quantity'],
             ];
-            $produce = \App\Models\Produce::find($item['id']);
-            if ($produce) {
-                $prodShort = ucfirst(mb_substr($produce->name, 0, 3));
-                $catShort = strtoupper(mb_substr($produce->category, 0, 2));
-                $shortCodes[] = "{$prodShort}-{$catShort}";
-            }
         }
     }
 
@@ -82,7 +75,7 @@ class FoodPackageController extends Controller
         return back()->withInput()->withErrors(['produce' => 'Selecteer ten minste één product en geef een hoeveelheid op.']);
     }
 
-    // Stock check using Produce model
+    // Use Produce model for stock check
     foreach ($produceItems as $item) {
         $produce = Produce::find($item['id']);
         if (!$produce || !$produce->hasStock($item['amount'])) {
@@ -93,16 +86,8 @@ class FoodPackageController extends Controller
         }
     }
 
-    // Auto-generate short package name if not provided
-    $packageName = $validated['package_name'] ?? null;
-    if (empty($packageName)) {
-        $max = 3;
-        $nameList = array_slice($shortCodes, 0, $max);
-        $packageName = implode(' ', $nameList);
-        if (count($shortCodes) > $max) {
-            $packageName .= ' ...';
-        }
-    }
+    // Generate package name using model
+    $packageName = FoodPackage::generatePackageName($validated['package_name'] ?? null, $produceItems);
 
     try {
         $package = FoodPackage::create([
@@ -118,6 +103,7 @@ class FoodPackageController extends Controller
         return back()->withInput()->withErrors(['error' => 'Er is een fout opgetreden bij het opslaan van het voedselpakket.']);
     }
 
+    // Attach produce using Eloquent relationship and decrement stock via model
     foreach ($produceItems as $item) {
         $produce = Produce::find($item['id']);
         $package->produces()->attach($produce->id, [
@@ -201,6 +187,16 @@ public function edit($id)
 
 public function update(Request $request, $id)
 {
+    $package = FoodPackage::find($id);
+
+    if (!$package) {
+        return redirect()->route('food_packages.index')->with('error', 'Voedselpakket niet gevonden.');
+    }
+
+    if ($package->status === 'Distributed') {
+        return redirect()->route('food_packages.index')->with('error', 'Uitgeleverde pakketten mogen niet aangepast worden.');
+    }
+
     $validated = $request->validate([
         'customer_id' => 'required|exists:customer,id',
         'package_name' => 'required|string|max:100',
@@ -211,7 +207,6 @@ public function update(Request $request, $id)
         'produce' => 'required|array',
     ]);
 
-    // Prepare produce_items from form input
     $produceItems = [];
     foreach ($validated['produce'] as $item) {
         if (isset($item['id']) && isset($item['quantity']) && $item['id'] && $item['quantity']) {
@@ -226,21 +221,16 @@ public function update(Request $request, $id)
         return back()->withInput()->withErrors(['produce' => 'Selecteer ten minste één product en geef een hoeveelheid op.']);
     }
 
-    // Check stock for each produce item (add back old quantities first)
-    $oldProduce = DB::table('food_package_produce')
-        ->where('food_package_id', $id)
-        ->get();
-
-    foreach ($oldProduce as $old) {
-        DB::table('produce')
-            ->where('id', $old->produce_id)
-            ->increment('amount', $old->quantity);
+    // Restore old stock using model
+    foreach ($package->produces as $old) {
+        $old->incrementStock($old->pivot->quantity);
     }
 
+    // Check stock for new produce items using model
     foreach ($produceItems as $item) {
-        $produce = DB::table('produce')->where('id', $item['id'])->first();
-        $available = $produce ? $produce->amount : 0;
-        if ($item['amount'] > $available) {
+        $produce = \App\Models\Produce::find($item['id']);
+        if (!$produce || !$produce->hasStock($item['amount'])) {
+            $available = $produce ? $produce->amount : 0;
             return back()->withInput()->withErrors([
                 'produce' => "Niet genoeg voorraad voor {$item['amount']}x van {$produce->name} (beschikbaar: {$available})."
             ]);
@@ -248,33 +238,28 @@ public function update(Request $request, $id)
     }
 
     // Update food package
-    DB::table('food_package')->where('id', $id)->update([
+    $package->update([
         'customer_id' => $validated['customer_id'],
         'package_name' => $validated['package_name'],
         'assembled_at' => $validated['assembled_at'],
         'distribution_date' => $validated['distribution_date'],
         'pickup_time' => $validated['pickup_time'],
         'status' => $validated['status'],
-        'updated_at' => now(),
         'datum_gewijzigd' => now(),
     ]);
 
-    // Remove old produce links
-    DB::table('food_package_produce')->where('food_package_id', $id)->delete();
-
-    // Insert new produce items and decrement stock
+    // Sync produce items and decrement stock using model
+    $syncData = [];
     foreach ($produceItems as $item) {
-        DB::table('food_package_produce')->insert([
-            'food_package_id' => $id,
-            'produce_id' => $item['id'],
+        $syncData[$item['id']] = [
             'quantity' => $item['amount'],
             'created_at' => now(),
             'updated_at' => now(),
-        ]);
-        DB::table('produce')
-            ->where('id', $item['id'])
-            ->decrement('amount', $item['amount']);
+        ];
+        $produce = \App\Models\Produce::find($item['id']);
+        $produce->decrementStock($item['amount']);
     }
+    $package->produces()->sync($syncData);
 
     return redirect()->route('food_packages.index')->with('success', 'Voedselpakket succesvol bijgewerkt.');
 }

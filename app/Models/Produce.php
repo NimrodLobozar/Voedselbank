@@ -30,14 +30,14 @@ class Produce extends Model
             ->withPivot('quantity', 'created_at', 'updated_at');
     }
 
-    public function hasStock($quantity)
+    public function hasStock($amount)
     {
-        return $this->amount >= $quantity;
+        return $this->amount >= $amount;
     }
 
-    public function decrementStock($quantity)
+    public function decrementStock($amount)
     {
-        $this->decrement('amount', $quantity);
+        $this->decrement('amount', $amount);
     }
 
     public function incrementStock($quantity)
