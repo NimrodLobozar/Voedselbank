@@ -12,6 +12,7 @@ use App\Models\Supplier;
 use App\Models\Produce;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\FoodPackage;
 
 class DatabaseSeeder extends Seeder
 {
@@ -91,13 +92,16 @@ class DatabaseSeeder extends Seeder
             'datum_gewijzigd' => now(),
         ]);
 
-        // Create a test supplier
-        // Supplier::factory(20)->create();
-
+<<<<<<<<< Temporary merge branch 1
         // Create additional test customers
         Customer::factory(10)->create([
             'postal_code' => fake()->regexify('[1-9][0-9]{3}[A-Z]{2}'),
         ]);
+
+        FoodPackage::factory(10)->create([ ]);
+    }
+}
+
         
         // Create FoodStorage test data
         FoodStorage::factory(10)->create();

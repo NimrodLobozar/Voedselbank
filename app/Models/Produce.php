@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Produce extends Model
 {
@@ -24,36 +24,8 @@ class Produce extends Model
         'weight_per_unit',
         'is_actief',
         'opmerking',
+        'created_at',
+        'updated_at',
+        'datum_aangemaakt',
     ];
-
-    protected $casts = [
-        'expiry_date' => 'date',
-        'received_date' => 'date',
-        'is_actief' => 'boolean',
-        'weight_per_unit' => 'decimal:3',
-    ];
-
-    // Relatie naar food storage
-    public function foodStorage()
-    {
-        return $this->belongsTo(FoodStorage::class, 'food_storage_id');
-    }
-
-    // Relatie naar supplier
-    public function supplier()
-    {
-        return $this->belongsTo(Supplier::class);
-    }
-
-    // Check of product binnenkort verloopt
-    public function isExpiringSoon($days = 7)
-    {
-        return $this->expiry_date <= now()->addDays($days);
-    }
-
-    // Check of product verlopen is
-    public function isExpired()
-    {
-        return $this->expiry_date < now();
-    }
 }
