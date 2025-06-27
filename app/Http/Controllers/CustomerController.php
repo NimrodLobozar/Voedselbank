@@ -19,26 +19,30 @@ class CustomerController extends Controller
         try {
             $customers = DB::select('CALL sp_GetCustomers()');
             
+            // Convert to collection for easier filtering
+            $customers = collect($customers);
+            
             // Apply name search filter
             if ($request->filled('name_search')) {
-                $search = strtolower($request->name_search);
-                $customers = array_filter($customers, function ($customer) use ($search) {
-                    return str_contains(strtolower($customer->full_name), $search);
+                $search = strtolower(trim($request->name_search));
+                $customers = $customers->filter(function ($customer) use ($search) {
+                    return str_contains(strtolower($customer->full_name), $search) ||
+                           str_contains(strtolower($customer->full_address ?? ''), $search);
                 });
             }
             
             // Apply status filter
-            if ($request->filled('status_filter')) {
+            if ($request->filled('status_filter') && $request->status_filter !== '') {
                 $status = (bool) $request->status_filter;
-                $customers = array_filter($customers, function ($customer) use ($status) {
+                $customers = $customers->filter(function ($customer) use ($status) {
                     return (bool) $customer->is_actief === $status;
                 });
             }
             
             // Apply household size filter
-            if ($request->filled('household_filter')) {
+            if ($request->filled('household_filter') && $request->household_filter !== '') {
                 $householdFilter = $request->household_filter;
-                $customers = array_filter($customers, function ($customer) use ($householdFilter) {
+                $customers = $customers->filter(function ($customer) use ($householdFilter) {
                     if ($householdFilter === '5+') {
                         return $customer->household_size >= 5;
                     }
@@ -46,10 +50,13 @@ class CustomerController extends Controller
                 });
             }
 
+            // Convert back to array for the view
+            $customers = $customers->values()->all();
+
             return view('customers.index', compact('customers'));
         } catch (\Exception $e) {
             return view('customers.index', ['customers' => []])
-                ->withErrors(['error' => 'Er is een fout opgetreden bij het ophalen van klanten.']);
+                ->withErrors(['error' => 'Er is een fout opgetreden bij het ophalen van klanten: ' . $e->getMessage()]);
         }
     }
 

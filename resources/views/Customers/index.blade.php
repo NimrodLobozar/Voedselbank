@@ -119,29 +119,58 @@ document.addEventListener('DOMContentLoaded', () => {
     const filterSection = document.getElementById('filterSection');
     const searchInput = document.querySelector('#search-main .search-input');
 
+    // Toggle filter section
     if (filterIcon) {
         filterIcon.addEventListener('click', () => {
             filterSection.classList.toggle('hidden');
         });
     }
 
+    // Handle search form submission
     if (searchInput) {
+        // Submit search on Enter key
         searchInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
-                const form = document.createElement('form');
-                form.method = 'GET';
-                form.action = '{{ route("customers.index") }}';
-
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'name_search';
-                input.value = this.value;
-
-                form.appendChild(input);
-                document.body.appendChild(form);
-                form.submit();
+                e.preventDefault();
+                submitSearch(this.value);
             }
         });
+
+        // Also submit when clicking outside or losing focus after typing
+        searchInput.addEventListener('blur', function() {
+            if (this.value !== '{{ request("name_search") }}') {
+                submitSearch(this.value);
+            }
+        });
+    }
+
+    function submitSearch(searchValue) {
+        const form = document.createElement('form');
+        form.method = 'GET';
+        form.action = '{{ route("customers.index") }}';
+
+        // Add search input
+        const searchInput = document.createElement('input');
+        searchInput.type = 'hidden';
+        searchInput.name = 'name_search';
+        searchInput.value = searchValue;
+        form.appendChild(searchInput);
+
+        // Preserve existing filters
+        const currentFilters = new URLSearchParams(window.location.search);
+        ['status_filter', 'household_filter'].forEach(filter => {
+            const value = currentFilters.get(filter);
+            if (value) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = filter;
+                input.value = value;
+                form.appendChild(input);
+            }
+        });
+
+        document.body.appendChild(form);
+        form.submit();
     }
 });
 </script>
