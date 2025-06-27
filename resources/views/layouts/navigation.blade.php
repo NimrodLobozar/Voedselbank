@@ -21,6 +21,12 @@
                         </x-nav-link>
                        
                     @endif
+
+                    @if (auth()->user() && auth()->user()->hasRole('Admin'))
+    <x-nav-link :href="route('food_packages.index')" :active="request()->routeIs('food_packages.index')">
+        {{ __('Voedselpakketten') }}
+    </x-nav-link>
+@endif
                 </div>
             </div>
 
