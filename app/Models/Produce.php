@@ -111,11 +111,6 @@ class Produce extends Model
         }
 
         return null;
-
-    public function foodPackages()
-    {
-        return $this->belongsToMany(FoodPackage::class, 'food_package_produce', 'produce_id', 'food_package_id')
-            ->withPivot('quantity', 'created_at', 'updated_at');
     }
 
     public function hasStock($amount)
