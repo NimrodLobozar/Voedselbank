@@ -5,7 +5,8 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    public function up(): void {
+    public function up(): void
+    {
         Schema::create('person', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
@@ -40,7 +41,7 @@ return new class extends Migration {
             $table->dateTime('datum_gewijzigd', 6);
         });
 
-        Schema::create('supplier', function (Blueprint $table) {
+        Schema::create('suppliers', function (Blueprint $table) {
             $table->id();
             $table->string('name', 100);
             $table->string('contact_person', 100);
@@ -105,7 +106,7 @@ return new class extends Migration {
             $table->string('opmerking', 255)->nullable();
             $table->timestamps();
             $table->dateTime('datum_aangemaakt', 6);
-            $table->dateTime('datum_gewijzigd', 6);           
+            $table->dateTime('datum_gewijzigd', 6);
         });
 
         Schema::create('food_storage', function (Blueprint $table) {
@@ -137,7 +138,7 @@ return new class extends Migration {
 
         Schema::create('produce', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('supplier_id')->constrained('supplier')->onDelete('cascade');
+            $table->foreignId('supplier_id')->constrained('suppliers')->onDelete('cascade');
             $table->foreignId('food_storage_id')->constrained('food_storage')->onDelete('cascade');
             $table->string('name', 100);
             $table->string('brand', 100)->nullable();
@@ -190,7 +191,7 @@ return new class extends Migration {
             $table->string('opmerking', 255)->nullable();
             $table->timestamps();
             $table->dateTime('datum_aangemaakt', 6);
-            $table->dateTime('datum_gewijzigd', 6);            
+            $table->dateTime('datum_gewijzigd', 6);
         });
 
         Schema::create('customer_allergy', function (Blueprint $table) {
@@ -215,7 +216,8 @@ return new class extends Migration {
         });
     }
 
-    public function down(): void {
+    public function down(): void
+    {
         Schema::dropIfExists('food_package_produce');
         Schema::dropIfExists('customer_allergy');
         Schema::dropIfExists('family');
@@ -227,7 +229,7 @@ return new class extends Migration {
         Schema::dropIfExists('contact');
         Schema::dropIfExists('customer');
         Schema::dropIfExists('family_member');
-        Schema::dropIfExists('supplier');
+        Schema::dropIfExists('suppliers');
         Schema::dropIfExists('employee');
         Schema::dropIfExists('role');
         Schema::dropIfExists('person');
