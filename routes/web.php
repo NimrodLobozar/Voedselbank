@@ -9,7 +9,8 @@ Route::get('/', function () {
 })->name('/');
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $isMaintenanceMode = DB::table('settings')->where('key', 'maintenance_mode')->value('value') ?? false;
+    return view('dashboard', compact('isMaintenanceMode'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -17,5 +18,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::post('/toggle-maintenance', [MaintenanceController::class, 'toggle'])->name('toggle.maintenance');
 
 require __DIR__ . '/auth.php';
