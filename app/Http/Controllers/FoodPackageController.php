@@ -300,4 +300,10 @@ public function destroy($id)
     return redirect()->route('food_packages.index')->with('success', 'Voedselpakket succesvol verwijderd.');
 }
 
+public function spIndex()
+{
+    $result = DB::select('CALL sp_GetFoodPackages()');
+    // $result is an array of stdClass objects with your SP's columns
+    return view('food_packages.sp_index', ['packages' => $result]);
+}
 }
