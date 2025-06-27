@@ -25,43 +25,68 @@
             @endif
 
             <!-- Controls Section -->
-            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 mb-6">
-                <!-- Search Filters - Far Left -->
-                <div class="lg:w-1/2">
-                    <button id="toggleFilters" class="flex items-center text-blue-600 mb-2 font-medium hover:text-blue-800 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
-                        </svg>
-                        Filters {{ request('search') ? '(Actief)' : '' }}
-                    </button>
+            <div class="space-y-6 mb-6">
+                <!-- Top Row - Search and Button -->
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                    <!-- Search Component - Left Side -->
+                    <div class="flex-1 lg:max-w-md">
+                        <x-test.search />
+                    </div>
                     
-                    <div id="filterSection" class="{{ request('search') ? '' : 'hidden' }} bg-gray-50 p-4 rounded-lg">
-                        <form method="GET" action="{{ route('customers.index') }}" class="flex flex-col sm:flex-row gap-3">
-                            <div class="flex-1">
-                                <input type="text" name="search" placeholder="Zoek op naam, email of adres..." value="{{ request('search') }}"
-                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <!-- Right Controls - Nieuwe Klant Button -->
+                    <div class="flex justify-end lg:w-auto lg:flex-shrink-0">
+                        <a href="{{ route('customers.create') }}" 
+                           class="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition-all transform hover:scale-105 whitespace-nowrap">
+                            Nieuwe Klant
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Additional Filters - Left Side -->
+                <div class="flex flex-col lg:flex-row lg:justify-between gap-4">
+                    <div id="filterSection" class="{{ request('status_filter') || request('household_filter') ? '' : 'hidden' }} bg-gray-50 p-4 rounded-lg lg:max-w-2xl flex-1">
+                        <form method="GET" action="{{ route('customers.index') }}" class="space-y-4">
+                            <input type="hidden" name="name_search" value="{{ request('name_search') }}">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Status Filter -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                                    <select name="status_filter" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        <option value="">Alle statussen</option>
+                                        <option value="1" {{ request('status_filter') == '1' ? 'selected' : '' }}>Actief</option>
+                                        <option value="0" {{ request('status_filter') == '0' ? 'selected' : '' }}>Inactief</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Household Size Filter -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Huishoudgrootte</label>
+                                    <select name="household_filter" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        <option value="">Alle groottes</option>
+                                        <option value="1" {{ request('household_filter') == '1' ? 'selected' : '' }}>1 persoon</option>
+                                        <option value="2" {{ request('household_filter') == '2' ? 'selected' : '' }}>2 personen</option>
+                                        <option value="3" {{ request('household_filter') == '3' ? 'selected' : '' }}>3 personen</option>
+                                        <option value="4" {{ request('household_filter') == '4' ? 'selected' : '' }}>4 personen</option>
+                                        <option value="5+" {{ request('household_filter') == '5+' ? 'selected' : '' }}>5+ personen</option>
+                                    </select>
+                                </div>
                             </div>
+                            
                             <div class="flex gap-2">
                                 <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors">
-                                    Zoeken
+                                    Filters toepassen
                                 </button>
-                                @if(request('search'))
+                                @if(request('name_search') || request('status_filter') || request('household_filter'))
                                     <a href="{{ route('customers.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition-colors">
-                                        Reset
+                                        Reset alle filters
                                     </a>
                                 @endif
                             </div>
                         </form>
                     </div>
-                </div>
-
-                <!-- Right Controls - Far Right -->
-                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 lg:w-auto lg:flex-shrink-0">
-                   
-                    <a href="{{ route('customers.create') }}" 
-                       class="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-green-700 transition-all transform hover:scale-105">
-                        Nieuwe Klant
-                    </a>
+                    
+                    <!-- Empty right space to maintain button position -->
+                    <div class="hidden lg:block lg:w-auto lg:flex-shrink-0"></div>
                 </div>
             </div>
         </div>
@@ -132,7 +157,7 @@
         <!-- Error Container -->
         <div id="errorContainer" class="hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-12">
-                <p class="text-red-500 text-lg">Geen klanten gevonden. Maak een nieuwe klant aan.</p>
+                <p class="text-red-500 text-lg">Er zijn momenteel geen klanten beschikbaar. Probeer het later opnieuw.</p>
             </div>
         </div>
     </div>
@@ -141,47 +166,40 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const toggleFilters = document.getElementById('toggleFilters');
+    const filterIcon = document.getElementById('search-filter-icon');
     const filterSection = document.getElementById('filterSection');
+    const searchInput = document.querySelector('#search-main .search-input');
 
     // Filter toggle functionality
-    toggleFilters.addEventListener('click', function() {
-        filterSection.classList.toggle('hidden');
-    });
+    if (filterIcon) {
+        filterIcon.addEventListener('click', function() {
+            filterSection.classList.toggle('hidden');
+        });
+    }
+
+    // Handle search input
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const form = document.createElement('form');
+                form.method = 'GET';
+                form.action = '{{ route("customers.index") }}';
+                
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'name_search';
+                input.value = this.value;
+                
+                form.appendChild(input);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
 });
 </script>
 
 <style>
-/* Responsive table adjustments */
-@media (max-width: 640px) {
-    table {
-        font-size: 0.875rem;
-    }
-    
-    .py-4 {
-        padding-top: 0.75rem;
-        padding-bottom: 0.75rem;
-    }
-    
-    .px-6 {
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-}
-</style>
-    }
-    
-    .py-4 {
-        padding-top: 0.75rem;
-        padding-bottom: 0.75rem;
-    }
-    
-    .px-6 {
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-}
-</style>
 .toggle-dot {
     transition: transform 0.2s ease-in-out;
 }
