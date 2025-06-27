@@ -5,6 +5,13 @@
             {{ __('Voedselpakketten') }}
         </h2>
     </x-slot>
+    <div class="flex justify-end mb-6">
+    <a href="{{ route('food_packages.create') }}"
+       class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow transition">
+        + Voeg nieuw pakket toe
+    </a>
+</div>
+
     <div class="max-w-5xl mx-auto px-4 py-8">
         @if($packages->isEmpty())
             <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded mb-6" role="alert">

@@ -19,4 +19,20 @@ class FoodPackageController extends Controller
 
         return view('food_packages.index', compact('packages'));
     }
+
+public function create()
+{
+    $customers = DB::table('customer')
+        ->select('id', DB::raw("CONCAT(first_name, ' ', IFNULL(middle_name, ''), ' ', last_name) as full_name"))
+        ->get();
+
+    $produceItems = DB::table('produce')
+        ->where('is_actief', true)
+        ->where('amount', '>', 0)
+        ->orderBy('expiry_date')
+        ->get();
+
+    return view('food_packages.create', compact('customers', 'produceItems'));
+}
+
 }

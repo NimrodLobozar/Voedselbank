@@ -22,6 +22,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/voedselpakketten', [FoodPackageController::class, 'index'])->name('food_packages.index');
+    Route::get('/voedselpakketten/create', [FoodPackageController::class, 'create'])->name('food_packages.create');
+    Route::post('/voedselpakketten', [FoodPackageController::class, 'store'])->name('food_packages.store');
 
 });
 

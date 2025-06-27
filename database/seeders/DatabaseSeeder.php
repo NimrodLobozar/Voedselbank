@@ -8,6 +8,7 @@ use App\Models\Person;
 use Illuminate\Support\Facades\DB;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\FoodPackage;
 
 class DatabaseSeeder extends Seeder
 {
@@ -117,5 +118,7 @@ class DatabaseSeeder extends Seeder
             'datum_aangemaakt' => now(),
             'datum_gewijzigd' => now(),
         ]);
+
+        FoodPackage::factory(10)->create([ ]);
     }
 }
