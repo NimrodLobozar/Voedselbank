@@ -35,8 +35,8 @@ class FoodStorageController extends Controller
             });
         }
 
-        // Sorteren op alle eigenschappen
-        $sort = $request->get('sort', 'name');
+        // Sorteren op alle eigenschappen - standaard op ID vanaf 1
+        $sort = $request->get('sort', 'id');
         $direction = $request->get('direction', 'asc');
         if (in_array($sort, ['id', 'name', 'category', 'amount', 'expiry_date'])) {
             $query->orderBy($sort, $direction);
