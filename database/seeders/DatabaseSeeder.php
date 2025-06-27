@@ -91,7 +91,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Create a test supplier
-        // Supplier::factory(20)->create();
+        Supplier::factory(20)->create();
 
         // Create additional test customers
         Customer::factory(10)->create([
