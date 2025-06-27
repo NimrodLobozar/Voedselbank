@@ -35,9 +35,10 @@
                     
                     <!-- Right Controls - Nieuwe Klant Button -->
                     <div class="flex justify-end lg:w-auto lg:flex-shrink-0">
-                        <a href="{{ route('customers.create') }}" 
-                           class="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition-all transform hover:scale-105 whitespace-nowrap">
-                            Nieuwe Klant
+                        <a href="{{ route('customers.create') }}" class="inline-block">
+                            <x-test.button>
+                                Nieuwe Klant
+                            </x-test.button>
                         </a>
                     </div>
                 </div>
