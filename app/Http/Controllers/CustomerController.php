@@ -50,6 +50,27 @@ class CustomerController extends Controller
                 });
             }
 
+            // Apply dietary filter
+            if ($request->filled('dietary_filter') && $request->dietary_filter !== '') {
+                $dietaryFilter = $request->dietary_filter;
+                $customers = $customers->filter(function ($customer) use ($dietaryFilter) {
+                    switch ($dietaryFilter) {
+                        case 'vegan':
+                            return (bool) $customer->is_vegan;
+                        case 'vegetarian':
+                            return (bool) $customer->is_vegetarian;
+                        case 'no_pork':
+                            return (bool) $customer->no_pork;
+                        case 'allergies':
+                            // Check if customer has allergies - this would need to be added to the stored procedure
+                            // For now, we'll assume the SP includes allergy information
+                            return isset($customer->has_allergies) && (bool) $customer->has_allergies;
+                        default:
+                            return true;
+                    }
+                });
+            }
+
             // Convert back to array for the view
             $customers = $customers->values()->all();
 

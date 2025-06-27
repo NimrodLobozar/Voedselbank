@@ -127,39 +127,39 @@
 document.addEventListener('DOMContentLoaded', () => {
     const filterIcon = document.getElementById('search-filter-icon');
     const filterSection = document.getElementById('filterSection');
-    const searchInput = document.querySelector('#search-main .search-input');
+    const searchForm = document.getElementById('searchForm');
+    const searchInput = searchForm ? searchForm.querySelector('.search-input') : null;
 
     // Toggle filter section
     if (filterIcon) {
-        filterIcon.addEventListener('click', () => {
+        filterIcon.addEventListener('click', (e) => {
+            e.preventDefault();
             filterSection.classList.toggle('hidden');
         });
     }
 
-    // Handle search form submission
+    // Handle search form submission on Enter key
     if (searchInput) {
-        // Submit search on Enter key
         searchInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                submitSearch(this.value);
+                searchForm.submit();
             }
         });
 
-        // Also submit when clicking outside or losing focus after typing
-        searchInput.addEventListener('blur', function() {
-            if (this.value !== '{{ request("name_search") }}') {
-                submitSearch(this.value);
-            }
+        // Auto-submit when user stops typing (debounced)
+        let searchTimeout;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                if (this.value !== '{{ request("name_search") }}') {
+                    searchForm.submit();
+                }
+            }, 500); // Wait 500ms after user stops typing
         });
     }
-
-    function submitSearch(searchValue) {
-        const form = document.createElement('form');
-        form.method = 'GET';
-        form.action = '{{ route("customers.index") }}';
-
-        // Add search input
+});
+</script>
         const searchInput = document.createElement('input');
         searchInput.type = 'hidden';
         searchInput.name = 'name_search';
