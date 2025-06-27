@@ -92,17 +92,13 @@ class DatabaseSeeder extends Seeder
             'datum_gewijzigd' => now(),
         ]);
 
-<<<<<<<<< Temporary merge branch 1
         // Create additional test customers
         Customer::factory(10)->create([
             'postal_code' => fake()->regexify('[1-9][0-9]{3}[A-Z]{2}'),
         ]);
 
         FoodPackage::factory(10)->create([ ]);
-    }
-}
 
-        
         // Create FoodStorage test data
         FoodStorage::factory(10)->create();
 
