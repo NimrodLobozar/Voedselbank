@@ -92,6 +92,9 @@ class DatabaseSeeder extends Seeder
             'datum_gewijzigd' => now(),
         ]);
 
+        // Create a test supplier
+        Supplier::factory(20)->create();
+
         // Create additional test customers
         Customer::factory(10)->create([
             'postal_code' => fake()->regexify('[1-9][0-9]{3}[A-Z]{2}'),

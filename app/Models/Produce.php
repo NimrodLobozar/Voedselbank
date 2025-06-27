@@ -21,11 +21,6 @@ class Produce extends Model
         'received_date',
         'amount',
         'unit',
-        'weight_per_unit',
-        'is_actief',
-        'opmerking',
-        'created_at',
-        'updated_at',
-        'datum_aangemaakt',
+        'weight_per_unit'
     ];
 }

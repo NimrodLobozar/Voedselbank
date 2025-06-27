@@ -37,8 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/suppliers/{supplier}', [SupplierController::class, 'update'])->name('suppliers.update');
     Route::delete('/suppliers/{supplier}', [SupplierController::class, 'destroy'])->name('suppliers.destroy');
 
-    Route::resource('customers', CustomerController::class);
-    Route::patch('customers/{customer}/restore', [CustomerController::class, 'restore'])->name('customers.restore');
+  
     Route::get('/voedselpakketten', [FoodPackageController::class, 'index'])->name('food_packages.index');
     Route::get('/voedselpakketten/create', [FoodPackageController::class, 'create'])->name('food_packages.create');
     Route::post('/voedselpakketten', [FoodPackageController::class, 'store'])->name('food_packages.store');
