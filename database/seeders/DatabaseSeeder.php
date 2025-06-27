@@ -93,43 +93,43 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Create suppliers using factory
-        Supplier::factory(20)->create();
+        // Supplier::factory(20)->create();
 
         // Create FoodStorage test data
         FoodStorage::factory(10)->create();
 
         // Create additional test customers
-        Customer::factory(10)->create([
-            'postal_code' => fake()->regexify('[1-9][0-9]{3}[A-Z]{2}'),
-        ]);
+        // Customer::factory(10)->create([
+        //     'postal_code' => fake()->regexify('[1-9][0-9]{3}[A-Z]{2}'),
+        // ]);
 
-        FoodPackage::factory(10)->create();
+        // FoodPackage::factory(10)->create();
 
         // Create produce items using factory (includes test data)
-        Produce::factory(15)->create();
+        // Produce::factory(15)->create();
 
         // Create produce items manually to ensure datetime fields are set
-        $suppliers = Supplier::pluck('id')->toArray();
-        $storages = FoodStorage::pluck('id')->toArray();
-        
-        for ($i = 0; $i < 15; $i++) {
-            $now = now();
-            Produce::create([
-                'supplier_id' => fake()->randomElement($suppliers),
-                'food_storage_id' => fake()->randomElement($storages),
-                'name' => fake()->word(),
-                'brand' => fake()->optional()->company(),
-                'category' => fake()->randomElement(['Groente', 'Fruit', 'Vlees', 'Zuivel', 'Granen', 'Conserven', 'Diepvries', 'Brood', 'Overig']),
-                'expiry_date' => fake()->dateTimeBetween('now', '+1 year')->format('Y-m-d'),
-                'received_date' => fake()->dateTimeBetween('-1 month', 'now')->format('Y-m-d'),
-                'amount' => fake()->numberBetween(1, 100),
-                'unit' => fake()->randomElement(['stuks', 'kg', 'liter', 'zakken']),
-                'weight_per_unit' => fake()->optional()->randomFloat(3, 0.1, 5),
-                'is_actief' => true,
-                'opmerking' => fake()->optional()->sentence(),
-                'datum_aangemaakt' => $now,
-                'datum_gewijzigd' => $now,
-            ]);
-        }
+        // $suppliers = Supplier::pluck('id')->toArray();
+        // $storages = FoodStorage::pluck('id')->toArray();
+
+        // for ($i = 0; $i < 15; $i++) {
+        //     $now = now();
+        //     Produce::create([
+        //         'supplier_id' => fake()->randomElement($suppliers),
+        //         'food_storage_id' => fake()->randomElement($storages),
+        //         'name' => fake()->word(),
+        //         'brand' => fake()->optional()->company(),
+        //         'category' => fake()->randomElement(['Groente', 'Fruit', 'Vlees', 'Zuivel', 'Granen', 'Conserven', 'Diepvries', 'Brood', 'Overig']),
+        //         'expiry_date' => fake()->dateTimeBetween('now', '+1 year')->format('Y-m-d'),
+        //         'received_date' => fake()->dateTimeBetween('-1 month', 'now')->format('Y-m-d'),
+        //         'amount' => fake()->numberBetween(1, 100),
+        //         'unit' => fake()->randomElement(['stuks', 'kg', 'liter', 'zakken']),
+        //         'weight_per_unit' => fake()->optional()->randomFloat(3, 0.1, 5),
+        //         'is_actief' => true,
+        //         'opmerking' => fake()->optional()->sentence(),
+        //         'datum_aangemaakt' => $now,
+        //         'datum_gewijzigd' => $now,
+        //     ]);
+        // }
     }
 }

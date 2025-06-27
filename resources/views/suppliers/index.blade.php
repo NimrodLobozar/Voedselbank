@@ -136,10 +136,10 @@
                                             {{ request('order_status') == 'in_behandeling' ? 'selected' : '' }}>
                                             In behandeling
                                         </option>
-                                        <option value="geleverd"
+                                        {{-- <option value="geleverd"
                                             {{ request('order_status') == 'geleverd' ? 'selected' : '' }}>
                                             Geleverd
-                                        </option>
+                                        </option> --}}
                                     </select>
                                 </div>
 
@@ -266,7 +266,7 @@
                                 <img src="{{ asset('svg/supplier.svg') }}" alt="Geen leveranciers"
                                     class="h-16 w-16 svg-filter-red opacity-70 transition-all duration-300 hover:scale-105">
                             </div>
-                            @if (request('search') || request('supplier_type'))
+                            @if (request('search') || request('supplier_type') || request('order_status'))
                                 <h3 class="mt-2 text-sm font-medium text-orange-600 dark:text-orange-400">Geen
                                     resultaten gevonden</h3>
                                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">

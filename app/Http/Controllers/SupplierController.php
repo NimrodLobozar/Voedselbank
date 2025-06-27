@@ -190,7 +190,7 @@ class SupplierController extends Controller
             // Check if supplier has any active orders (onderweg or in_behandeling)
             if ($supplier->hasActiveOrders()) {
                 return redirect()->route('suppliers.index')
-                    ->with('error', 'Leverancier kan niet worden verwijderd. Er zijn nog actieve bestellingen (onderweg of in behandeling) van deze leverancier.');
+                    ->with('error', 'Leverancier kan niet worden verwijderd. Er zijn nog actieve bestellingen (onderweg of in behandeling) van deze leverancier. Leveranciers met alleen geleverde bestellingen kunnen wel worden verwijderd.');
             }
 
             // If no active orders, proceed with deletion
