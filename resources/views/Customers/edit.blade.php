@@ -80,13 +80,13 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium mb-1">Toevoeging</label>
-                                    <input type="text" name="addition" value="{{ old('addition', $customer->addition) }}"
+                                    <input type="text" name="addition" value="{{ old('addition', $customer->addition) }}" maxlength="10"
                                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-800">
                                     @error('addition')<span class="text-red-500 text-xs">{{ $message }}</span>@enderror
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium mb-1">Postcode *</label>
-                                    <input type="text" name="postal_code" value="{{ old('postal_code', $customer->postal_code) }}" required
+                                    <input type="text" name="postal_code" value="{{ old('postal_code', $customer->postal_code) }}" maxlength="7" required
                                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-800">
                                     @error('postal_code')<span class="text-red-500 text-xs">{{ $message }}</span>@enderror
                                 </div>
