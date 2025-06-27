@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            <h2 class="font-semibold text-xl leading-tight text-gray-900 dark:text-gray-100">
                 {{ __('Klant wijzigen') }}  #{{ $customer->id }} - {{ $customer->first_name }} {{ $customer->last_name }}
             </h2>
             <span class="px-3 py-1 text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded-full">
@@ -22,10 +22,9 @@
                                 {{ $customer->is_actief ? 'Actief' : 'Inactief' }}
                             </span>
                         </div>
-                        <a href="{{ route('customers.show', $customer) }}" 
-                           class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                            Terug naar Details
-                        </a>
+                         <x-test.button href="{{ route('customers.index') }}">
+                            Terug naar Overzicht
+                        </x-test.button>
                     </div>
 
                     <form method="POST" action="{{ route('customers.update', $customer) }}" class="space-y-6">
@@ -167,14 +166,12 @@
 
                         <!-- Submit Buttons -->
                         <div class="flex justify-end space-x-4">
-                            <a href="{{ route('customers.show', $customer) }}" 
-                               class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                           <x-test.button href="{{ route('customers.show', $customer) }}">
                                 Annuleren
-                            </a>
-                            <button type="submit" 
-                                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                Wijzigingen Opslaan
-                            </button>
+                            </x-test.button>
+                             <x-test.button type="submit">
+                                Opslaan
+                            </x-test.button>
                         </div>
                     </form>
 

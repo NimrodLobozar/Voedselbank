@@ -19,19 +19,37 @@ class CustomerController extends Controller
         try {
             $customers = DB::select('CALL sp_GetCustomers()');
             
-            // Apply search filter if provided
-            if ($request->has('search') && !empty($request->search)) {
-                $search = strtolower($request->search);
+            // Apply name search filter
+            if ($request->filled('name_search')) {
+                $search = strtolower($request->name_search);
                 $customers = array_filter($customers, function ($customer) use ($search) {
-                    return str_contains(strtolower($customer->full_name), $search) ||
-                           str_contains(strtolower($customer->email), $search) ||
-                           str_contains(strtolower($customer->full_address), $search);
+                    return str_contains(strtolower($customer->full_name), $search);
+                });
+            }
+            
+            // Apply status filter
+            if ($request->filled('status_filter')) {
+                $status = (bool) $request->status_filter;
+                $customers = array_filter($customers, function ($customer) use ($status) {
+                    return (bool) $customer->is_actief === $status;
+                });
+            }
+            
+            // Apply household size filter
+            if ($request->filled('household_filter')) {
+                $householdFilter = $request->household_filter;
+                $customers = array_filter($customers, function ($customer) use ($householdFilter) {
+                    if ($householdFilter === '5+') {
+                        return $customer->household_size >= 5;
+                    }
+                    return $customer->household_size == $householdFilter;
                 });
             }
 
             return view('customers.index', compact('customers'));
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Er is een fout opgetreden bij het ophalen van klanten.']);
+            return view('customers.index', ['customers' => []])
+                ->withErrors(['error' => 'Er is een fout opgetreden bij het ophalen van klanten.']);
         }
     }
 
@@ -48,67 +66,28 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'first_name' => 'required|string|max:50',
-            'middle_name' => 'nullable|string|max:20',
-            'last_name' => 'required|string|max:50',
-            'birth_date' => 'required|date|before:today',
-            'street' => 'required|string|max:100',
-            'house_number' => 'required|string|max:10',
-            'addition' => 'nullable|string|max:10',
-            'postal_code' => 'required|string|max:7',
-            'city' => 'required|string|max:50',
-            'mobile' => 'required|string|max:20',
-            'customer_email' => 'required|string|email|max:100',
-            'household_size' => 'required|integer|min:1|max:20',
-            'income' => 'nullable|numeric|min:0|max:999999.99',
-            'registration_date' => 'required|date',
-            'opmerking' => 'nullable|string|max:255',
-        ]);
+        $validated = $this->validateCustomerData($request);
 
         try {
             DB::beginTransaction();
 
-            // Create user account
             $user = User::create([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
             ]);
 
-            // Create customer record
-            $customer = Customer::create([
-                'user_id' => $user->id,
-                'first_name' => $validated['first_name'],
-                'middle_name' => $validated['middle_name'],
-                'last_name' => $validated['last_name'],
-                'birth_date' => $validated['birth_date'],
-                'street' => $validated['street'],
-                'house_number' => $validated['house_number'],
-                'addition' => $validated['addition'],
-                'postal_code' => $validated['postal_code'],
-                'city' => $validated['city'],
-                'mobile' => $validated['mobile'],
-                'email' => $validated['customer_email'],
-                'household_size' => $validated['household_size'],
-                'income' => $validated['income'],
-                'registration_date' => $validated['registration_date'],
-                'opmerking' => $validated['opmerking'],
-                'is_actief' => true,
-            ]);
+            Customer::create(array_merge(
+                array_except($validated, ['name', 'email', 'password', 'password_confirmation']),
+                ['user_id' => $user->id, 'email' => $validated['customer_email'], 'is_actief' => true]
+            ));
 
             DB::commit();
-
-            return redirect()->route('customers.index')
-                           ->with('success', 'Klant is succesvol aangemaakt.');
+            return redirect()->route('customers.index')->with('success', 'Klant is succesvol aangemaakt.');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withInput()
-                        ->withErrors(['error' => 'Er is een fout opgetreden bij het aanmaken van de klant.']);
+            return back()->withInput()->withErrors(['error' => 'Er is een fout opgetreden bij het aanmaken van de klant.']);
         }
     }
 
@@ -121,16 +100,12 @@ class CustomerController extends Controller
             $customerData = DB::select('CALL sp_GetCustomerById(?)', [$customer->id]);
             
             if (empty($customerData)) {
-                return redirect()->route('customers.index')
-                               ->withErrors(['error' => 'Klant niet gevonden.']);
+                return redirect()->route('customers.index')->withErrors(['error' => 'Klant niet gevonden.']);
             }
-
-            $customerData = $customerData[0];
 
             return view('customers.show', compact('customer', 'customerData'));
         } catch (\Exception $e) {
-            return redirect()->route('customers.index')
-                           ->withErrors(['error' => 'Er is een fout opgetreden bij het ophalen van klantgegevens.']);
+            return redirect()->route('customers.index')->withErrors(['error' => 'Er is een fout opgetreden bij het ophalen van klantgegevens.']);
         }
     }
 
@@ -147,40 +122,13 @@ class CustomerController extends Controller
      */
     public function update(Request $request, Customer $customer)
     {
-        $validated = $request->validate([
-            'first_name' => 'required|string|max:50',
-            'middle_name' => 'nullable|string|max:20',
-            'last_name' => 'required|string|max:50',
-            'birth_date' => 'required|date|before:today',
-            'street' => 'required|string|max:100',
-            'house_number' => 'required|string|max:10',
-            'addition' => 'nullable|string|max:10',
-            'postal_code' => 'required|string|max:7',
-            'city' => 'required|string|max:50',
-            'mobile' => 'required|string|max:20',
-            'email' => [
-                'required',
-                'string',
-                'email',
-                'max:100',
-                Rule::unique('customer', 'email')->ignore($customer->id),
-            ],
-            'household_size' => 'required|integer|min:1|max:20',
-            'income' => 'nullable|numeric|min:0|max:999999.99',
-            'registration_date' => 'required|date',
-            'is_actief' => 'boolean',
-            'opmerking' => 'nullable|string|max:255',
-        ]);
+        $validated = $this->validateCustomerData($request, $customer);
 
         try {
             $customer->update($validated);
-
-            return redirect()->route('customers.show', $customer)
-                           ->with('success', 'Klantgegevens zijn succesvol bijgewerkt.');
-
+            return redirect()->route('customers.show', $customer)->with('success', 'Klantgegevens zijn succesvol bijgewerkt.');
         } catch (\Exception $e) {
-            return back()->withInput()
-                        ->withErrors(['error' => 'Er is een fout opgetreden bij het bijwerken van de klantgegevens.']);
+            return back()->withInput()->withErrors(['error' => 'Er is een fout opgetreden bij het bijwerken van de klantgegevens.']);
         }
     }
 
@@ -190,12 +138,8 @@ class CustomerController extends Controller
     public function destroy(Customer $customer)
     {
         try {
-            // Soft delete by setting is_actief to false instead of actual deletion
             $customer->update(['is_actief' => false]);
-
-            return redirect()->route('customers.index')
-                           ->with('success', 'Klant is succesvol gedeactiveerd.');
-
+            return redirect()->route('customers.index')->with('success', 'Klant is succesvol gedeactiveerd.');
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Er is een fout opgetreden bij het deactiveren van de klant.']);
         }
@@ -208,12 +152,44 @@ class CustomerController extends Controller
     {
         try {
             $customer->update(['is_actief' => true]);
-
-            return redirect()->route('customers.show', $customer)
-                           ->with('success', 'Klant is succesvol geactiveerd.');
-
+            return redirect()->route('customers.show', $customer)->with('success', 'Klant is succesvol geactiveerd.');
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Er is een fout opgetreden bij het activeren van de klant.']);
         }
+    }
+
+    /**
+     * Validate customer data.
+     */
+    private function validateCustomerData(Request $request, Customer $customer = null)
+    {
+        $rules = [
+            'first_name' => 'required|string|max:50',
+            'middle_name' => 'nullable|string|max:20',
+            'last_name' => 'required|string|max:50',
+            'birth_date' => 'required|date|before:today',
+            'street' => 'required|string|max:100',
+            'house_number' => 'required|string|max:10',
+            'addition' => 'nullable|string|max:10',
+            'postal_code' => 'required|string|max:7',
+            'city' => 'required|string|max:50',
+            'mobile' => 'required|string|max:20',
+            'customer_email' => 'required|string|email|max:100',
+            'household_size' => 'required|integer|min:1|max:20',
+            'income' => 'nullable|numeric|min:0|max:999999.99',
+            'registration_date' => 'required|date',
+            'opmerking' => 'nullable|string|max:255',
+        ];
+
+        if (!$customer) {
+            $rules['name'] = 'required|string|max:255';
+            $rules['email'] = 'required|string|email|max:255|unique:users';
+            $rules['password'] = 'required|string|min:8|confirmed';
+        } else {
+            $rules['email'] = ['required', 'string', 'email', 'max:100', Rule::unique('customer', 'email')->ignore($customer->id)];
+            $rules['is_actief'] = 'boolean';
+        }
+
+        return $request->validate($rules);
     }
 }

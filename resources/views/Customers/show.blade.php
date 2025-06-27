@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            <h2 class="font-semibold text-xl leading-tight text-gray-900 dark:text-gray-100">
                 {{ __('Klant') }} #{{ $customer->id }} - {{ $customer->first_name }} {{ $customer->last_name }}
             </h2>
             <span class="px-3 py-1 text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded-full">
@@ -24,22 +24,19 @@
                             </span>
                         </div>
                         <div class="flex space-x-2">
-                            <a href="{{ route('customers.index') }}" 
-                               class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                                Terug naar Overzicht
-                            </a>
-                            <a href="{{ route('customers.edit', $customer) }}" 
-                               class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
-                                Bewerken
-                            </a>
+                             <x-test.button href="{{ route('customers.index') }}">
+                            Terug naar Overzicht
+                            </x-test.button>
+                             <x-test.button href="{{ route('customers.edit', $customer) }}" >
+                            Wijzig
+                            </x-test.button>
                             @if($customer->is_actief)
                                 <form method="POST" action="{{ route('customers.destroy', $customer) }}" class="inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" 
-                                            onclick="return confirm('Weet je zeker dat je deze klant wilt deactiveren?')"
-                                            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                                        Deactiveren
+                                            onclick="return confirm('Weet je zeker dat je deze klant wilt deactiveren?')">
+                                        <x-test.button>Verwijder</x-test.button>
                                     </button>
                                 </form>
                             @else
