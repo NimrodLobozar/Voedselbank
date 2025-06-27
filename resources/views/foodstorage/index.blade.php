@@ -34,8 +34,15 @@
             <!-- Success/Error Messages -->
             @if(session('success'))
                 <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6" role="alert">
-                    <strong class="font-bold">Gelukt!</strong>
-                    <span class="block sm:inline">{{ session('success') }}</span>
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <div>
+                            <strong class="font-bold">Gelukt!</strong>
+                            <span class="block sm:inline">{{ session('success') }}</span>
+                        </div>
+                    </div>
                 </div>
             @endif
 
@@ -203,15 +210,29 @@
                                                    class="text-green-600 hover:text-green-900">Details</a>
                                                 <a href="{{ route('foodstorage.edit', $produce) }}" 
                                                    class="text-indigo-600 hover:text-indigo-900">Bewerken</a>
-                                                <form method="POST" action="{{ route('foodstorage.destroy', $produce) }}" 
-                                                      class="inline-block"
-                                                      onsubmit="return confirm('Weet je zeker dat je dit product wilt verwijderen?')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="text-red-600 hover:text-red-900">
+                                                
+                                                @php
+                                                    $canDelete = !$produce->foodStorage || $produce->foodStorage->status !== 'onderweg';
+                                                @endphp
+                                                
+                                                @if($canDelete)
+                                                    <form method="POST" action="{{ route('foodstorage.destroy', $produce) }}" 
+                                                          class="inline-block"
+                                                          onsubmit="return confirm('Weet je zeker dat je dit product wilt verwijderen?')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="text-red-600 hover:text-red-900">
+                                                            Verwijderen
+                                                        </button>
+                                                    </form>
+                                                @else
+                                                    <button type="button" 
+                                                            class="text-gray-400 cursor-not-allowed" 
+                                                            disabled
+                                                            title="Product kan niet verwijderd worden: status is 'Onderweg'">
                                                         Verwijderen
                                                     </button>
-                                                </form>
+                                                @endif
                                             </div>
                                         </td>
                                     </tr>
