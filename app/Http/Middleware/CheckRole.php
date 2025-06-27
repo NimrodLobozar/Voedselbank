@@ -18,7 +18,7 @@ class CheckRole
      */
     public function handle(Request $request, Closure $next, string $role): Response
     {
-        if (!auth()->check() || !auth()->user()->roles()->where('name', 'Admin')->exists()) {
+        if (!auth()->check() || !auth()->user()->hasRole($role)) {
             abort(403, 'Unauthorized');
         }
 
