@@ -125,8 +125,9 @@ return new class extends Migration {
 
         Schema::create('allergy', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 50);
-            $table->text('description')->nullable();
+            $table->enum('allergy_name', [
+                'Pinda', 'Noten', 'Melk', 'Eieren', 'Soja', 'Tarwe', 'Vis', 'Schaaldieren', 'Sesam', 'Gluten', 'Lactose', 'Sulfieten'
+            ]);
             $table->boolean('is_actief')->default(true);
             $table->string('opmerking', 255)->nullable();
             $table->timestamps();
