@@ -25,9 +25,9 @@
             @endif
 
             <!-- Controls Section -->
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-                <!-- Search Filters -->
-                <div class="flex-1">
+            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 mb-6">
+                <!-- Search Filters - Far Left -->
+                <div class="lg:w-1/2">
                     <button id="toggleFilters" class="flex items-center text-blue-600 mb-2 font-medium hover:text-blue-800 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
@@ -55,16 +55,9 @@
                     </div>
                 </div>
 
-                <!-- Right Controls -->
-                <div class="flex items-center gap-4">
-                    <label class="flex items-center">
-                        <span class="text-white mr-2">Toon Data</span>
-                        <div class="relative">
-                            <input type="checkbox" id="dataToggle" class="sr-only" checked>
-                            <div class="toggle-bg w-10 h-6 bg-gray-300 rounded-full shadow-inner cursor-pointer"></div>
-                            <div class="toggle-dot absolute w-4 h-4 bg-white rounded-full shadow inset-y-1 left-1 cursor-pointer transition-transform"></div>
-                        </div>
-                    </label>
+                <!-- Right Controls - Far Right -->
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 lg:w-auto lg:flex-shrink-0">
+                   
                     <a href="{{ route('customers.create') }}" 
                        class="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-green-700 transition-all transform hover:scale-105">
                         Nieuwe Klant
@@ -143,26 +136,13 @@
             </div>
         </div>
     </div>
+    <x-test.dev-toggle />
 </x-app-layout>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const dataToggle = document.getElementById('dataToggle');
-    const dataContainer = document.getElementById('dataContainer');
-    const errorContainer = document.getElementById('errorContainer');
     const toggleFilters = document.getElementById('toggleFilters');
     const filterSection = document.getElementById('filterSection');
-
-    // Data toggle functionality
-    dataToggle.addEventListener('change', function() {
-        if (this.checked) {
-            dataContainer.classList.remove('hidden');
-            errorContainer.classList.add('hidden');
-        } else {
-            dataContainer.classList.add('hidden');
-            errorContainer.classList.remove('hidden');
-        }
-    });
 
     // Filter toggle functionality
     toggleFilters.addEventListener('click', function() {
@@ -172,15 +152,36 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <style>
-/* Toggle Switch Styles */
-#dataToggle:checked + .toggle-bg {
-    background-color: #38A169;
+/* Responsive table adjustments */
+@media (max-width: 640px) {
+    table {
+        font-size: 0.875rem;
+    }
+    
+    .py-4 {
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+    }
+    
+    .px-6 {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
 }
-
-#dataToggle:checked + .toggle-bg .toggle-dot {
-    transform: translateX(1rem);
+</style>
+    }
+    
+    .py-4 {
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+    }
+    
+    .px-6 {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
 }
-
+</style>
 .toggle-dot {
     transition: transform 0.2s ease-in-out;
 }
