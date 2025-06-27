@@ -128,7 +128,6 @@ class DatabaseSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-            // Create a test supplier
 
             Supplier::factory(20)->create();
 
