@@ -34,7 +34,6 @@ class CustomerFactory extends Factory
             'income' => fake()->randomFloat(2, 800, 3000),
             'registration_date' => fake()->dateTimeBetween('-2 years', 'now')->format('Y-m-d'),
             'is_actief' => fake()->boolean(90),
-            'opmerking' => fake()->optional(0.4)->sentence(),
             'datum_aangemaakt' => now(),
             'datum_gewijzigd' => now(),
         ];
