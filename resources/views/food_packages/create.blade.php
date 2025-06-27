@@ -21,6 +21,25 @@
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
+
+                    {{-- Show validation errors --}}
+                    @if ($errors->any())
+                        <div class="mb-4">
+                            <ul class="text-red-600 dark:text-red-400 text-sm list-disc pl-5">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    {{-- Show success message --}}
+                    @if (session('success'))
+                        <div class="mb-4 text-green-600 dark:text-green-400">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
                     <form method="POST" action="{{ route('food_packages.store') }}">
                         @csrf
 
@@ -37,8 +56,10 @@
 
                         {{-- Pakketnaam --}}
                         <div class="mb-4">
-                            <label for="package_name" class="block text-gray-700 dark:text-gray-200 font-medium mb-1">Pakketnaam</label>
-                            <input type="text" name="package_name" id="package_name" class="w-full rounded border-gray-300 dark:bg-gray-700 dark:text-white" required>
+                            <label for="package_name" class="block text-gray-700 dark:text-gray-200 font-medium mb-1">
+                                Pakketnaam <span class="text-xs text-gray-500">(optioneel, wordt automatisch gegenereerd indien leeg)</span>
+                            </label>
+                            <input type="text" name="package_name" id="package_name" class="w-full rounded border-gray-300 dark:bg-gray-700 dark:text-white">
                         </div>
 
                         {{-- Samengesteld op --}}
@@ -67,9 +88,13 @@
                                     <div class="flex items-center gap-4">
                                         <input type="checkbox" name="produce[{{ $loop->index }}][id]" value="{{ $produce->id }}" id="produce_{{ $produce->id }}" class="form-checkbox text-blue-600">
                                         <label for="produce_{{ $produce->id }}" class="text-gray-800 dark:text-gray-100">
-                                            {{ $produce->name }} ({{ $produce->expiry_date }})
+                                            {{ $produce->name }}
+                                            <span class="text-xs font-semibold px-2 py-1 rounded bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200 ml-1">
+                                                THT: {{ $produce->expiry_date }}
+                                            </span>
                                         </label>
                                         <input type="number" name="produce[{{ $loop->index }}][quantity]" placeholder="Aantal" min="1" class="w-24 rounded border-gray-300 dark:bg-gray-700 dark:text-white">
+                                        <span class="ml-2 text-gray-600 dark:text-gray-300">{{ $produce->unit }}</span>
                                     </div>
                                 @endforeach
                             </div>

@@ -23,4 +23,25 @@ class Produce extends Model
         'unit',
         'weight_per_unit'
     ];
+
+    public function foodPackages()
+    {
+        return $this->belongsToMany(FoodPackage::class, 'food_package_produce', 'produce_id', 'food_package_id')
+            ->withPivot('quantity', 'created_at', 'updated_at');
+    }
+
+    public function hasStock($quantity)
+    {
+        return $this->amount >= $quantity;
+    }
+
+    public function decrementStock($quantity)
+    {
+        $this->decrement('amount', $quantity);
+    }
+
+    public function incrementStock($quantity)
+    {
+        $this->increment('amount', $quantity);
+    }
 }

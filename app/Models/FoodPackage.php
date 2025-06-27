@@ -24,4 +24,10 @@ class FoodPackage extends Model
         'datum_aangemaakt',
         'datum_gewijzigd',
     ];
+
+    public function produces()
+    {
+        return $this->belongsToMany(Produce::class, 'food_package_produce', 'food_package_id', 'produce_id')
+            ->withPivot('quantity', 'created_at', 'updated_at');
+    }
 }
