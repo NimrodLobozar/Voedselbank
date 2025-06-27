@@ -29,7 +29,7 @@ class FoodPackageController extends Controller
             $query->where('food_package.status', $request->input('status'));
         }
 
-        $packages = $query->orderBy('food_package.distribution_date', 'desc')->paginate(10);
+        $packages = $query->orderBy('food_package.distribution_date', 'desc')->paginate(1);
 
         // Fetch all produce items for all packages (for current page only)
         $packageIds = $packages->pluck('id')->all();

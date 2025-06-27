@@ -143,6 +143,10 @@
                                 </tbody>
                             </table>
                         </div>
+                        {{-- Add pagination links --}}
+                        <div class="mt-6">
+                            {{ $packages->withQueryString()->links() }}
+                        </div>
                     @else
                         <div class="text-center py-12">
                             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24"
