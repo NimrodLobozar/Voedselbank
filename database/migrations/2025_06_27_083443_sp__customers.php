@@ -38,7 +38,7 @@ return new class extends Migration
             WHERE
                 c.is_actief = 1
             ORDER BY
-                c.last_name, c.first_name;
+            c.datum_aangemaakt DESC, c.id DESC;
             END
         ');
 

@@ -105,10 +105,13 @@ class CustomerController extends Controller
                 'password' => Hash::make($validated['password']),
             ]);
 
-            Customer::create(array_merge(
-                array_except($validated, ['name', 'email', 'password', 'password_confirmation']),
-                ['user_id' => $user->id, 'email' => $validated['customer_email'], 'is_actief' => true]
-            ));
+            $customerData = $validated;
+            unset($customerData['name'], $customerData['email'], $customerData['password'], $customerData['password_confirmation']);
+            $customerData['user_id'] = $user->id;
+            $customerData['email'] = $validated['customer_email'];
+            $customerData['is_actief'] = true;
+
+            Customer::create($customerData);
 
             DB::commit();
             return redirect()->route('customers.index')->with('success', 'Klant is succesvol aangemaakt.');
@@ -236,7 +239,7 @@ class CustomerController extends Controller
             $rules['email'] = 'required|string|email|max:255|unique:users';
             $rules['password'] = 'required|string|min:8|confirmed';
         } else {
-            $rules['email'] = ['required', 'string', 'email', 'max:100', Rule::unique('customer', 'email')->ignore($customer->id)];
+            $rules['customer_email'] = ['required', 'string', 'email', 'max:100', Rule::unique('customer', 'email')->ignore($customer->id)];
             $rules['is_actief'] = 'boolean';
         }
 
