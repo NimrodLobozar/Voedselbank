@@ -2,13 +2,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\FoodStorage;
+use App\Models\Produce;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 
 class FoodStorageController extends Controller
 {
     public function index(Request $request)
     {
-        $query = FoodStorage::query();
+        $query = FoodStorage::with(['produces', 'expiringSoonProduces']);
 
         // Filter op name
         if ($request->filled('name')) {
@@ -20,6 +22,11 @@ class FoodStorageController extends Controller
             $query->where('location', 'like', '%' . $request->location . '%');
         }
 
+        // Filter op storage type
+        if ($request->filled('storage_type')) {
+            $query->where('storage_type', $request->storage_type);
+        }
+
         // Sorteren
         $sort = $request->get('sort', 'name');
         $direction = $request->get('direction', 'asc');
@@ -29,7 +36,17 @@ class FoodStorageController extends Controller
 
         $storages = $query->get();
 
-        return view('foodstorage.index', compact('storages'));
+        // Stats voor dashboard
+        $stats = [
+            'total_storages' => FoodStorage::where('is_actief', true)->count(),
+            'total_products' => Produce::where('is_actief', true)->count(),
+            'expiring_soon' => Produce::where('expiry_date', '<=', now()->addDays(7))->where('is_actief', true)->count(),
+            'nearly_full_storages' => $storages->filter(function($storage) {
+                return $storage->occupancy_percentage > 80;
+            })->count()
+        ];
+
+        return view('foodstorage.index', compact('storages', 'stats'));
     }
 
     public function create()
@@ -79,5 +96,19 @@ class FoodStorageController extends Controller
         $foodstorage->delete();
 
         return redirect()->route('foodstorage.index')->with('success', 'Food storage verwijderd!');
+    }
+
+    public function show(FoodStorage $foodstorage)
+    {
+        $foodstorage->load(['produces.supplier']);
+        
+        // Producten in deze storage
+        $produces = $foodstorage->produces()
+            ->with('supplier')
+            ->where('is_actief', true)
+            ->orderBy('expiry_date', 'asc')
+            ->get();
+
+        return view('foodstorage.show', compact('foodstorage', 'produces'));
     }
 }

@@ -92,5 +92,6 @@ class DatabaseSeeder extends Seeder
         Customer::factory(10)->create([
             'postal_code' => fake()->regexify('[1-9][0-9]{3}[A-Z]{2}'),
         ]);
+        FoodStorage::factory(10)->create([ ]);
     }
 }
