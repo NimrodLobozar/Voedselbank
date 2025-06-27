@@ -17,7 +17,7 @@ class CustomerController extends Controller
     public function index(Request $request)
     {
         try {
-            $customers = Customer::getAllCustomers();
+            $customers = DB::select('CALL sp_GetCustomers()');
             
             // Apply search filter if provided
             if ($request->has('search') && !empty($request->search)) {
@@ -118,12 +118,14 @@ class CustomerController extends Controller
     public function show(Customer $customer)
     {
         try {
-            $customerData = Customer::getCustomerById($customer->id);
+            $customerData = DB::select('CALL sp_GetCustomerById(?)', [$customer->id]);
             
-            if (!$customerData) {
+            if (empty($customerData)) {
                 return redirect()->route('customers.index')
                                ->withErrors(['error' => 'Klant niet gevonden.']);
             }
+
+            $customerData = $customerData[0];
 
             return view('customers.show', compact('customer', 'customerData'));
         } catch (\Exception $e) {
