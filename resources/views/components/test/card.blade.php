@@ -1,4 +1,4 @@
-<!-- From Uiverse.io by ElSombrero2 --> 
+<!-- Customer Card Component --> 
 <div class="card">
   <div class="content">
     <div class="back">
@@ -11,6 +11,11 @@
           </g>
         </svg>
         <strong>{{ $customer->full_name }}</strong>
+        <div class="back-details">
+          @if($customer->registration_date)
+            <p><strong>Lid sinds:</strong> {{ \Carbon\Carbon::parse($customer->registration_date)->format('d-m-Y') }}</p>
+          @endif
+        </div>
       </div>
     </div>
     <div class="front">
@@ -21,7 +26,9 @@
       </div>
 
       <div class="front-content">
-        <small class="badge">{{ $customer->is_actief ? 'Actief' : 'Inactief' }}</small>
+        <small class="badge {{ $customer->is_actief ? 'badge-active' : 'badge-inactive' }}">
+          {{ $customer->is_actief ? 'Actief' : 'Inactief' }}
+        </small>
         <div class="description">
           <div class="title">
             <p class="title">
@@ -33,11 +40,21 @@
             </div>
           </div>
           <div class="card-details">
-            <p><span>Adres:</span> {{ Str::limit($customer->full_address, 25) }}</p>
-            <p><span>Huishoud:</span> {{ $customer->household_size }} personen</p>
+            <p><span>Adres:</span> {{ Str::limit($customer->full_address, 30) }}</p>
+            <p><span>Gezin:</span> 
+              {{ ($customer->adults_count ?? 0) + ($customer->children_count ?? 0) + ($customer->babies_count ?? 0) }} personen
+            </p>
+            @if($customer->is_vegan || $customer->is_vegetarian || $customer->no_pork)
+              <p><span>Dieet:</span>
+                @if($customer->is_vegan) Vegan
+                @elseif($customer->is_vegetarian) Vegetarisch
+                @endif
+                @if($customer->no_pork) Geen varkensvlees @endif
+              </p>
+            @endif
           </div>
           <p class="card-footer">
-            {{ $customer->birth_date ? \Carbon\Carbon::parse($customer->birth_date)->format('d-m-Y') : 'Geboortedatum onbekend' }}
+            Geregistreerd: {{ $customer->registration_date ? \Carbon\Carbon::parse($customer->registration_date)->format('d-m-Y') : 'Onbekend' }}
           </p>
         </div>
       </div>
@@ -103,7 +120,19 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 30px;
+  gap: 15px;
+  padding: 10px;
+  text-align: center;
+}
+
+.back-details {
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.back-details p {
+  margin: 3px 0;
+  word-break: break-word;
 }
 
 .card:hover .content {
@@ -135,11 +164,24 @@
 }
 
 .front-content .badge {
-  background-color: #00000055;
   padding: 2px 10px;
   border-radius: 10px;
   backdrop-filter: blur(2px);
   width: fit-content;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.badge-active {
+  background-color: #22c55e55;
+  color: #22c55e;
+  border: 1px solid #22c55e;
+}
+
+.badge-inactive {
+  background-color: #ef444455;
+  color: #ef4444;
+  border: 1px solid #ef4444;
 }
 
 .description {
@@ -161,6 +203,7 @@
 
 .title p {
   width: 70%;
+  margin: 0;
 }
 
 .actions {
@@ -178,11 +221,11 @@
 }
 
 .view-btn:hover {
-  background-color: #0066cc;
+  background-color: #3b82f6;
 }
 
 .edit-btn:hover {
-  background-color: #cc9900;
+  background-color: #f59e0b;
 }
 
 .card-details {
@@ -252,5 +295,55 @@
   100% {
     transform: translateY(0px);
   }
+}
+
+.toggle-dot {
+    transition: transform 0.2s ease-in-out;
+}
+
+.group:hover .group-hover\:scale-105 {
+    transform: scale(1.05);
+}
+
+/* Responsive card grid fallback */
+@media (max-width: 640px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
+@media (min-width: 641px) and (max-width: 768px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (min-width: 769px) and (max-width: 1024px) {
+    .grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.toggle-dot {
+    transition: transform 0.2s ease-in-out;
+}
+
+.group:hover .group-hover\:scale-105 {
+    transform: scale(1.05);
+}
+
+/* Responsive card grid fallback */
+@media (max-width: 640px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
+@media (min-width: 641px) and (max-width: 768px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (min-width: 769px) and (max-width: 1024px) {
+    .grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 </style>

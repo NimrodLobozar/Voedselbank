@@ -105,12 +105,28 @@ class CustomerController extends Controller
     {
         try {
             $customerData = DB::select('CALL sp_GetCustomerById(?)', [$customer->id]);
+            $packageHistory = DB::select('CALL sp_GetCustomerPackageHistory(?)', [$customer->id]);
             
             if (empty($customerData)) {
                 return redirect()->route('customers.index')->withErrors(['error' => 'Klant niet gevonden.']);
             }
 
-            return view('customers.show', compact('customer', 'customerData'));
+            // Get customer allergies
+            $allergies = DB::table('customer_allergy')
+                ->join('allergy', 'customer_allergy.allergy_id', '=', 'allergy.id')
+                ->where('customer_allergy.customer_id', $customer->id)
+                ->where('customer_allergy.is_actief', true)
+                ->select('allergy.allergy_name', 'customer_allergy.severity')
+                ->get();
+
+            // Get custom allergies
+            $customAllergies = DB::table('custom_allergy')
+                ->where('customer_id', $customer->id)
+                ->where('is_actief', true)
+                ->select('allergy_name', 'severity')
+                ->get();
+
+            return view('customers.show', compact('customer', 'customerData', 'packageHistory', 'allergies', 'customAllergies'));
         } catch (\Exception $e) {
             return redirect()->route('customers.index')->withErrors(['error' => 'Er is een fout opgetreden bij het ophalen van klantgegevens.']);
         }
@@ -183,8 +199,14 @@ class CustomerController extends Controller
             'mobile' => 'required|string|max:20',
             'customer_email' => 'required|string|email|max:100',
             'household_size' => 'required|integer|min:1|max:20',
+            'adults_count' => 'required|integer|min:0|max:20',
+            'children_count' => 'required|integer|min:0|max:20',
+            'babies_count' => 'required|integer|min:0|max:20',
             'income' => 'nullable|numeric|min:0|max:999999.99',
             'registration_date' => 'required|date',
+            'no_pork' => 'boolean',
+            'is_vegan' => 'boolean',
+            'is_vegetarian' => 'boolean',
             'opmerking' => 'nullable|string|max:255',
         ];
 

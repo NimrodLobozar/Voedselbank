@@ -39,10 +39,10 @@
 
                 <!-- Filter Section -->
                 <div class="flex flex-col lg:flex-row lg:justify-between gap-4">
-                    <div id="filterSection" class="{{ request('status_filter') || request('household_filter') ? '' : 'hidden' }} bg-gray-50 p-4 rounded-lg lg:max-w-2xl flex-1">
+                    <div id="filterSection" class="{{ request('status_filter') || request('household_filter') || request('dietary_filter') ? '' : 'hidden' }} bg-gray-50 p-4 rounded-lg lg:max-w-4xl flex-1">
                         <form method="GET" action="{{ route('customers.index') }}" class="space-y-4">
                             <input type="hidden" name="name_search" value="{{ request('name_search') }}">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
                                     <select name="status_filter" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
@@ -62,13 +62,24 @@
                                         <option value="5+" @selected(request('household_filter') == '5+')>5+ personen</option>
                                     </select>
                                 </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Dieetwensen</label>
+                                    <select name="dietary_filter" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        <option value="">Alle dieten</option>
+                                        <option value="vegan" @selected(request('dietary_filter') == 'vegan')>Veganistisch</option>
+                                        <option value="vegetarian" @selected(request('dietary_filter') == 'vegetarian')>Vegetarisch</option>
+                                        <option value="no_pork" @selected(request('dietary_filter') == 'no_pork')>Geen varkensvlees</option>
+                                        <option value="allergies" @selected(request('dietary_filter') == 'allergies')>Met allergieën</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <div class="flex gap-2">
                                 <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
                                     Filters toepassen
                                 </button>
-                                @if(request('name_search') || request('status_filter') || request('household_filter'))
+                                @if(request('name_search') || request('status_filter') || request('household_filter') || request('dietary_filter'))
                                     <a href="{{ route('customers.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600">
                                         Reset alle filters
                                     </a>
@@ -112,7 +123,6 @@
     <x-test.dev-toggle />
 </x-app-layout>
 
-@push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const filterIcon = document.getElementById('search-filter-icon');
@@ -158,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Preserve existing filters
         const currentFilters = new URLSearchParams(window.location.search);
-        ['status_filter', 'household_filter'].forEach(filter => {
+        ['status_filter', 'household_filter', 'dietary_filter'].forEach(filter => {
             const value = currentFilters.get(filter);
             if (value) {
                 const input = document.createElement('input');
@@ -174,33 +184,3 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 </script>
-@endpush
-
-@push('styles')
-<style>
-.toggle-dot {
-    transition: transform 0.2s ease-in-out;
-}
-
-.group:hover .group-hover\:scale-105 {
-    transform: scale(1.05);
-}
-
-/* Responsive card grid fallback */
-@media (max-width: 640px) {
-    .grid {
-        grid-template-columns: 1fr;
-    }
-}
-@media (min-width: 641px) and (max-width: 768px) {
-    .grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-@media (min-width: 769px) and (max-width: 1024px) {
-    .grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-</style>
-@endpush
