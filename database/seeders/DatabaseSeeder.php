@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use App\Models\Role;
 use App\Models\Person;
+use App\Models\Customer;
 use Illuminate\Support\Facades\DB;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -24,29 +25,13 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('Test1234'),
         ]);
 
-        // Create customer record for the test user
-        DB::table('customer')->insert([
+        // Create customer record for the test user using factory
+        Customer::factory()->create([
             'user_id' => $testUser->id,
             'first_name' => 'Test',
-            'middle_name' => null,
             'last_name' => 'User',
-            'birth_date' => '1990-01-01',
-            'street' => 'Example Street',
-            'house_number' => '123',
-            'addition' => null,
-            'postal_code' => '1234AB',
-            'city' => 'Example City',
-            'mobile' => '0612345678',
             'email' => 'test@example.com',
-            'household_size' => 1,
-            'income' => 1500.00,
-            'registration_date' => now()->toDateString(),
-            'is_actief' => true,
-            'opmerking' => 'Test customer details',
-            'created_at' => now(),
-            'updated_at' => now(),
-            'datum_aangemaakt' => now(),
-            'datum_gewijzigd' => now(),
+            'postal_code' => '1234AB',
         ]);
 
         // Create person record for the test user
@@ -75,29 +60,14 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('Admin1234'),
         ]);
 
-        // Create customer record for the admin user
-        DB::table('customer')->insert([
+        // Create customer record for the admin user using factory
+        Customer::factory()->create([
             'user_id' => $adminUser->id,
             'first_name' => 'Admin',
-            'middle_name' => null,
             'last_name' => 'User',
-            'birth_date' => '1985-01-01',
-            'street' => 'Admin Street',
-            'house_number' => '456',
-            'addition' => null,
-            'postal_code' => '5678CD',
-            'city' => 'Admin City',
-            'mobile' => '0698765432',
             'email' => 'admin@example.com',
-            'household_size' => 1,
             'income' => 3000.00,
-            'registration_date' => now()->toDateString(),
-            'is_actief' => true,
-            'opmerking' => 'Admin customer details',
-            'created_at' => now(),
-            'updated_at' => now(),
-            'datum_aangemaakt' => now(),
-            'datum_gewijzigd' => now(),
+            'postal_code' => '5678CD',
         ]);
 
         // Create person record for the admin user
@@ -117,6 +87,11 @@ class DatabaseSeeder extends Seeder
             'opmerking' => 'Admin user role details',
             'datum_aangemaakt' => now(),
             'datum_gewijzigd' => now(),
+        ]);
+
+        // Create additional test customers
+        Customer::factory(10)->create([
+            'postal_code' => fake()->regexify('[1-9][0-9]{3}[A-Z]{2}'),
         ]);
 
         FoodPackage::factory(10)->create([ ]);
