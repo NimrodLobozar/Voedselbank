@@ -41,6 +41,24 @@
                     {{ session('success') }}
                 </div>
             @endif
+
+            @if ($errors->any())
+                <div class="bg-red-500 text-white p-4 rounded mb-4">
+                    <div class="flex items-center mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        <strong>Er zijn fouten opgetreden:</strong>
+                    </div>
+                    <ul class="list-disc list-inside">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <!-- Header with Add Button -->
@@ -83,8 +101,11 @@
                                         </div>
                                         <input type="text" name="search" id="search"
                                             value="{{ request('search') }}" placeholder="Zoek op naam..."
-                                            class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                            class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('search') border-red-500 @enderror">
                                     </div>
+                                    @error('search')
+                                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
                                 </div>
 
                                 <!-- Filter by supplier type -->
@@ -94,7 +115,7 @@
                                         Filter op type
                                     </label>
                                     <select name="supplier_type" id="supplier_type"
-                                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('supplier_type') border-red-500 @enderror">
                                         <option value="">Alle types</option>
                                         @foreach ($supplierTypes as $type)
                                             <option value="{{ $type }}"
@@ -113,6 +134,9 @@
                                             </option>
                                         @endforeach
                                     </select>
+                                    @error('supplier_type')
+                                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
                                 </div>
 
                                 <!-- Filter by order status -->
@@ -122,7 +146,7 @@
                                         Bestelstatus
                                     </label>
                                     <select name="order_status" id="order_status"
-                                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('order_status') border-red-500 @enderror">
                                         <option value="">Alle statussen</option>
                                         <option value="actief"
                                             {{ request('order_status') == 'actief' ? 'selected' : '' }}>
@@ -136,11 +160,14 @@
                                             {{ request('order_status') == 'in_behandeling' ? 'selected' : '' }}>
                                             In behandeling
                                         </option>
-                                        {{-- <option value="geleverd"
+                                        <option value="geleverd"
                                             {{ request('order_status') == 'geleverd' ? 'selected' : '' }}>
                                             Geleverd
-                                        </option> --}}
+                                        </option>
                                     </select>
+                                    @error('order_status')
+                                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
                                 </div>
 
                                 <!-- Action buttons -->
@@ -157,8 +184,8 @@
                                     @if (request('search') || request('supplier_type') || request('order_status'))
                                         <a href="{{ route('suppliers.index') }}"
                                             class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition-colors duration-200 flex items-center flex-1 justify-center">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none"
-                                                viewBox="0 0 24 24" stroke="currentColor">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M6 18L18 6M6 6l12 12" />
                                             </svg>
