@@ -332,7 +332,7 @@
                                     <div
                                         class="absolute inset-x-10 top-10 bottom-0 overflow-hidden rounded-t-[12cqw] border-x-[3cqw] border-t-[3cqw] border-gray-700 bg-gray-900 shadow-2xl">
                                         <img class="size-full object-cover object-top"
-                                            src="{{ asset('img/personal_guidance.webp') }}" alt="">
+                                            src="{{ asset('img/people-taking-care-donations.jpg') }}" alt="">
                                     </div>
                                 </div>
                             </div>
@@ -356,7 +356,8 @@
                                 <div
                                     class="flex flex-1 items-center justify-center px-8 max-lg:pt-10 max-lg:pb-12 sm:px-10 lg:pb-2 shadow-2xl">
                                     <img class="w-full max-lg:max-w-xs rounded-lg shadow-2xl shadow-indigo-600/50 shadow-[10px_10px_20px_rgba(0,0,0,0.25)]"
-                                        src="{{ asset('img/modern_vehicles.webp') }}" alt="">
+                                        src="{{ asset('img/volunteers-collecting-food-donations-close-up.jpg') }}"
+                                        alt="">
                                 </div>
                             </div>
                             <div
