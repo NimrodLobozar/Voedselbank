@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            <h2 class="font-semibold text-xl leading-tight text-gray-900 dark:text-gray-100">
                 {{ __('Klant wijzigen') }}  #{{ $customer->id }} - {{ $customer->first_name }} {{ $customer->last_name }}
             </h2>
             <span class="px-3 py-1 text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded-full">
