@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -126,6 +125,5 @@ class Produce extends Model
     public function incrementStock($quantity)
     {
         $this->increment('amount', $quantity);
-
     }
 }
