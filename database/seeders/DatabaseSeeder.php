@@ -8,6 +8,7 @@ use App\Models\Person;
 use App\Models\Customer;
 use App\Models\FoodStorage;
 use Illuminate\Support\Facades\DB;
+use App\Models\Supplier;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -88,6 +89,9 @@ class DatabaseSeeder extends Seeder
             'datum_aangemaakt' => now(),
             'datum_gewijzigd' => now(),
         ]);
+
+        // Create a test supplier
+        // Supplier::factory(20)->create();
 
         // Create additional test customers
         Customer::factory(10)->create([
