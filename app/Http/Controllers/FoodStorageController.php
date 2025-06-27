@@ -13,9 +13,38 @@ class FoodStorageController extends Controller
         // We tonen producten (produce) voor voorraad beheer, niet storage
         $query = Produce::with(['foodStorage', 'supplier']);
 
-        // Filter op streepjescode (ID als barcode)
+        // Filter op streepjescode (barcode format naar ID conversie)
         if ($request->filled('barcode')) {
-            $query->where('id', 'like', '%' . $request->barcode . '%');
+            $barcodeInput = $request->barcode;
+            
+            // Probeer eerst directe ID match (voor backwards compatibility)
+            if (is_numeric($barcodeInput)) {
+                $query->where('id', $barcodeInput);
+            } else {
+                // Probeer barcode format te parsen
+                $extractedId = Produce::getIdFromBarcode($barcodeInput);
+                if ($extractedId) {
+                    $query->where('id', $extractedId);
+                } else {
+                    // Als parsing faalt, zoek naar producten die de barcode bevatten
+                    $query->whereRaw("REPLACE(CONCAT(
+                        CASE category 
+                            WHEN 'Groente' THEN '01'
+                            WHEN 'Fruit' THEN '02'
+                            WHEN 'Vlees' THEN '03'
+                            WHEN 'Zuivel' THEN '04'
+                            WHEN 'Granen' THEN '05'
+                            WHEN 'Conserven' THEN '06'
+                            WHEN 'Diepvries' THEN '07'
+                            WHEN 'Brood' THEN '08'
+                            WHEN 'Overig' THEN '09'
+                            ELSE '00'
+                        END,
+                        ' ',
+                        LPAD(id, 6, '0')
+                    ), ' ', '') LIKE ?", ['%' . preg_replace('/\s+/', '', $barcodeInput) . '%']);
+                }
+            }
         }
 
         // Filter op productnaam
@@ -99,6 +128,13 @@ class FoodStorageController extends Controller
         Produce::create($validated);
 
         return redirect()->route('foodstorage.index')->with('success', 'Product toegevoegd aan voorraad!');
+    }
+
+    public function show(Produce $foodstorage)
+    {
+        $foodstorage->load(['supplier', 'foodStorage']);
+        
+        return view('foodstorage.show', compact('foodstorage'));
     }
 
     public function edit(Produce $foodstorage)
