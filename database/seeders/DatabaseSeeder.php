@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Role;
 use App\Models\Person;
 use App\Models\Customer;
+use App\Models\FoodStorage;
 use Illuminate\Support\Facades\DB;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -92,6 +93,8 @@ class DatabaseSeeder extends Seeder
         Customer::factory(10)->create([
             'postal_code' => fake()->regexify('[1-9][0-9]{3}[A-Z]{2}'),
         ]);
-        FoodStorage::factory(10)->create([ ]);
+        
+        // Create FoodStorage test data
+        FoodStorage::factory(10)->create();
     }
 }
