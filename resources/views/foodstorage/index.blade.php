@@ -84,6 +84,11 @@
                                     <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm">{{ $produce->foodStorage->name ?? 'N/A' }}</td>
                                     <td class="border border-gray-300 dark:border-gray-600 px-4 py-2">
                                         <div class="flex gap-2">
+                                            <!-- Info button for additional details -->
+                                            <button type="button" onclick="showProductInfo({{ $produce->id }})" 
+                                                class="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600" title="Meer info">
+                                                ℹ️
+                                            </button>
                                             <a href="{{ route('foodstorage.edit', $produce) }}" class="px-2 py-1 bg-yellow-500 text-white rounded text-xs hover:bg-yellow-600">Wijzig</a>
                                             <form action="{{ route('foodstorage.destroy', $produce) }}" method="POST" style="display:inline;">
                                                 @csrf
@@ -110,4 +115,51 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal for product details -->
+    <div id="productModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen">
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Product Details</h3>
+                    <button onclick="closeProductModal()" class="text-gray-500 hover:text-gray-700">✕</button>
+                </div>
+                <div id="productDetails" class="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+                    <!-- Details will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function showProductInfo(productId) {
+        // Find the product data from the table row
+        const productData = @json($produces->keyBy('id'));
+        const product = productData[productId];
+        
+        if (product) {
+            const details = `
+                <div><strong>Leverancier:</strong> ${product.supplier?.name || 'N/A'}</div>
+                <div><strong>Ontvangstdatum:</strong> ${product.received_date || 'N/A'}</div>
+                <div><strong>Gewicht per eenheid:</strong> ${product.weight_per_unit || 'N/A'} kg</div>
+                <div><strong>Opslagtype:</strong> ${product.foodStorage?.storage_type || 'N/A'}</div>
+                <div><strong>Opmerking:</strong> ${product.opmerking || 'Geen opmerking'}</div>
+            `;
+            
+            document.getElementById('productDetails').innerHTML = details;
+            document.getElementById('productModal').classList.remove('hidden');
+        }
+    }
+
+    function closeProductModal() {
+        document.getElementById('productModal').classList.add('hidden');
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('productModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeProductModal();
+        }
+    });
+    </script>
 </x-app-layout>
