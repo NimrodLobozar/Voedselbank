@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\MaintenanceController;
+use App\Http\Controllers\FoodStorageController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\SupplierController;
@@ -24,6 +25,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    Route::resource('customers', CustomerController::class);
+    Route::patch('customers/{customer}/restore', [CustomerController::class, 'restore'])->name('customers.restore');
     Route::get('/suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
     Route::get('/suppliers/create', [SupplierController::class, 'create'])->name('suppliers.create');
     Route::post('/suppliers', [SupplierController::class, 'store'])->name('suppliers.store');
@@ -44,5 +47,8 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::post('/toggle-maintenance', [MaintenanceController::class, 'toggle'])->name('toggle.maintenance');
+
+// Vervang ProductController door FoodStorageController
+Route::resource('foodstorage', FoodStorageController::class);
 
 require __DIR__ . '/auth.php';
