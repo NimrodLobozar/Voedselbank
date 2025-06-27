@@ -29,6 +29,9 @@
                                         <li>{{ $error }}</li>
                                     @endforeach
                                 </ul>
+                                <div class="mt-3 text-sm">
+                                    <p><strong>Tip:</strong> Controleer of het product al bestaat op de geselecteerde locatie.</p>
+                                </div>
                             </div>
                         @endif
 
@@ -69,6 +72,7 @@
                                 @error('food_storage_id')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
+                                <p class="mt-1 text-xs text-gray-500">Controleer of het product al bestaat op deze locatie.</p>
                             </div>
 
                             <!-- Productnaam -->
@@ -77,11 +81,12 @@
                                     Productnaam <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" name="name" id="name" value="{{ old('name') }}" required
-                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('name') border-red-500 @enderror"
+                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                                        placeholder="Bijv. Appels">
                                 @error('name')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
+                                <p class="mt-1 text-xs text-gray-500">Let op: Productnaam moet uniek zijn per opslaglocatie.</p>
                             </div>
 
                             <!-- Merk -->
@@ -141,8 +146,7 @@
                                     Vervaldatum <span class="text-red-500">*</span>
                                 </label>
                                 <input type="date" name="expiry_date" id="expiry_date" value="{{ old('expiry_date') }}" required
-                                       min="{{ date('Y-m-d', strtotime('+1 day')) }}"
-                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('expiry_date') border-red-500 @enderror">
+                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
                                 @error('expiry_date')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -166,8 +170,9 @@
                                 <label for="amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Hoeveelheid <span class="text-red-500">*</span>
                                 </label>
-                                <input type="number" name="amount" id="amount" value="{{ old('amount') }}" required min="1"
-                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('amount') border-red-500 @enderror"
+                                <input type="number" name="amount" id="amount" value="{{ old('amount') }}" 
+                                       required min="1"
+                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                                        placeholder="Bijv. 10">
                                 @error('amount')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -219,7 +224,8 @@
                                 Annuleren
                             </a>
                             <button type="submit" 
-                                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                    onclick="this.disabled=true; this.form.submit();">
                                 Product Toevoegen
                             </button>
                         </div>

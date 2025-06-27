@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 class FoodStorage extends Model
 {
@@ -67,7 +68,7 @@ class FoodStorage extends Model
     }
 
     // Check of storage bijna vol is (boven 80%)
-    public function isNearlyFullAttribute()
+    public function getIsNearlyFullAttribute()
     {
         return $this->occupancy_percentage > 80;
     }

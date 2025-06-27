@@ -28,6 +28,7 @@ class Produce extends Model
         'datum_gewijzigd'
     ];
 
+
     protected $casts = [
         'is_actief' => 'boolean',
         'expiry_date' => 'date',
@@ -110,5 +111,26 @@ class Produce extends Model
         }
 
         return null;
+
+    public function foodPackages()
+    {
+        return $this->belongsToMany(FoodPackage::class, 'food_package_produce', 'produce_id', 'food_package_id')
+            ->withPivot('quantity', 'created_at', 'updated_at');
+    }
+
+    public function hasStock($amount)
+    {
+        return $this->amount >= $amount;
+    }
+
+    public function decrementStock($amount)
+    {
+        $this->decrement('amount', $amount);
+    }
+
+    public function incrementStock($quantity)
+    {
+        $this->increment('amount', $quantity);
+
     }
 }

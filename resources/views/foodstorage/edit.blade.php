@@ -22,6 +22,9 @@
                                         <li>{{ $error }}</li>
                                     @endforeach
                                 </ul>
+                                <div class="mt-3 text-sm">
+                                    <p><strong>Tip:</strong> Controleer of er al een ander product bestaat met deze naam op de geselecteerde locatie.</p>
+                                </div>
                             </div>
                         @endif
 
@@ -64,6 +67,7 @@
                                 @error('food_storage_id')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
+                                <p class="mt-1 text-xs text-gray-500">Controleer of er al een ander product bestaat met deze naam op deze locatie.</p>
                             </div>
 
                             <!-- Productnaam -->
@@ -77,6 +81,7 @@
                                 @error('name')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
+                                <p class="mt-1 text-xs text-gray-500">Let op: Productnaam moet uniek zijn per opslaglocatie.</p>
                             </div>
 
                             <!-- Merk -->

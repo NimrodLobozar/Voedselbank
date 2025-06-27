@@ -145,16 +145,33 @@
                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                 Bewerken
                             </a>
-                            <form method="POST" action="{{ route('foodstorage.destroy', $foodstorage) }}" 
-                                  class="inline-flex"
-                                  onsubmit="return confirm('Weet je zeker dat je dit product wilt verwijderen?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" 
-                                        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                            
+                            @php
+                                $canDelete = !$foodstorage->foodStorage || $foodstorage->foodStorage->status !== 'onderweg';
+                            @endphp
+                            
+                            @if($canDelete)
+                                <form method="POST" action="{{ route('foodstorage.destroy', $foodstorage) }}" 
+                                      class="inline-flex"
+                                      onsubmit="return confirm('Weet je zeker dat je dit product wilt verwijderen?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" 
+                                            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                        Verwijderen
+                                    </button>
+                                </form>
+                            @else
+                                <button type="button" 
+                                        class="bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded cursor-not-allowed" 
+                                        disabled
+                                        title="Product kan niet verwijderd worden: status is 'Onderweg'">
                                     Verwijderen
                                 </button>
-                            </form>
+                                <div class="text-xs text-red-600 mt-1">
+                                    Status: "Onderweg" - kan niet verwijderd worden
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
