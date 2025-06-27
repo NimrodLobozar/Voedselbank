@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Produce extends Model
 {
@@ -21,24 +21,6 @@ class Produce extends Model
         'received_date',
         'amount',
         'unit',
-        'weight_per_unit',
-        'is_actief',
-        'opmerking',
-        'datum_aangemaakt',
-        'datum_gewijzigd'
+        'weight_per_unit'
     ];
-
-    protected $casts = [
-        'is_actief' => 'boolean',
-        'expiry_date' => 'date',
-        'received_date' => 'date',
-    ];
-
-    /**
-     * Get the supplier that owns the produce.
-     */
-    public function supplier()
-    {
-        return $this->belongsTo(Supplier::class);
-    }
 }
