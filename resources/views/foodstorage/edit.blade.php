@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Nieuw Product Toevoegen') }}
+            {{ __('Product Bewerken') }}
         </h2>
     </x-slot>
 
@@ -9,16 +9,9 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <form method="POST" action="{{ route('foodstorage.store') }}" class="space-y-6">
+                    <form method="POST" action="{{ route('foodstorage.update', $foodstorage) }}" class="space-y-6">
                         @csrf
-
-                        <!-- Success Message -->
-                        @if(session('success'))
-                            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-                                <strong class="font-bold">Gelukt!</strong>
-                                <span class="block sm:inline">{{ session('success') }}</span>
-                            </div>
-                        @endif
+                        @method('PUT')
 
                         <!-- Error Messages -->
                         @if($errors->any())
@@ -42,7 +35,8 @@
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('supplier_id') border-red-500 @enderror">
                                     <option value="">Selecteer een leverancier</option>
                                     @foreach($suppliers as $supplier)
-                                        <option value="{{ $supplier->id }}" {{ old('supplier_id') == $supplier->id ? 'selected' : '' }}>
+                                        <option value="{{ $supplier->id }}" 
+                                                {{ (old('supplier_id', $foodstorage->supplier_id) == $supplier->id) ? 'selected' : '' }}>
                                             {{ $supplier->name }}
                                         </option>
                                     @endforeach
@@ -61,7 +55,8 @@
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('food_storage_id') border-red-500 @enderror">
                                     <option value="">Selecteer een opslaglocatie</option>
                                     @foreach($storages as $storage)
-                                        <option value="{{ $storage->id }}" {{ old('food_storage_id') == $storage->id ? 'selected' : '' }}>
+                                        <option value="{{ $storage->id }}" 
+                                                {{ (old('food_storage_id', $foodstorage->food_storage_id) == $storage->id) ? 'selected' : '' }}>
                                             {{ $storage->name }} - {{ $storage->location }}
                                         </option>
                                     @endforeach
@@ -76,7 +71,7 @@
                                 <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Productnaam <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" name="name" id="name" value="{{ old('name') }}" required
+                                <input type="text" name="name" id="name" value="{{ old('name', $foodstorage->name) }}" required
                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('name') border-red-500 @enderror"
                                        placeholder="Bijv. Appels">
                                 @error('name')
@@ -89,7 +84,7 @@
                                 <label for="brand" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Merk
                                 </label>
-                                <input type="text" name="brand" id="brand" value="{{ old('brand') }}"
+                                <input type="text" name="brand" id="brand" value="{{ old('brand', $foodstorage->brand) }}"
                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('brand') border-red-500 @enderror"
                                        placeholder="Bijv. Albert Heijn">
                                 @error('brand')
@@ -106,7 +101,8 @@
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('category') border-red-500 @enderror">
                                     <option value="">Selecteer een categorie</option>
                                     @foreach($categories as $category)
-                                        <option value="{{ $category }}" {{ old('category') == $category ? 'selected' : '' }}>
+                                        <option value="{{ $category }}" 
+                                                {{ (old('category', $foodstorage->category) == $category) ? 'selected' : '' }}>
                                             {{ $category }}
                                         </option>
                                     @endforeach
@@ -125,7 +121,8 @@
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('status') border-red-500 @enderror">
                                     <option value="">Selecteer een status</option>
                                     @foreach($statuses as $value => $label)
-                                        <option value="{{ $value }}" {{ old('status') == $value ? 'selected' : '' }}>
+                                        <option value="{{ $value }}" 
+                                                {{ (old('status', $foodstorage->foodStorage->status ?? '') == $value) ? 'selected' : '' }}>
                                             {{ $label }}
                                         </option>
                                     @endforeach
@@ -140,8 +137,8 @@
                                 <label for="expiry_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Vervaldatum <span class="text-red-500">*</span>
                                 </label>
-                                <input type="date" name="expiry_date" id="expiry_date" value="{{ old('expiry_date') }}" required
-                                       min="{{ date('Y-m-d', strtotime('+1 day')) }}"
+                                <input type="date" name="expiry_date" id="expiry_date" 
+                                       value="{{ old('expiry_date', $foodstorage->expiry_date->format('Y-m-d')) }}" required
                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('expiry_date') border-red-500 @enderror">
                                 @error('expiry_date')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -153,8 +150,8 @@
                                 <label for="received_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Ontvangstdatum <span class="text-red-500">*</span>
                                 </label>
-                                <input type="date" name="received_date" id="received_date" value="{{ old('received_date', date('Y-m-d')) }}" required
-                                       max="{{ date('Y-m-d') }}"
+                                <input type="date" name="received_date" id="received_date" 
+                                       value="{{ old('received_date', $foodstorage->received_date->format('Y-m-d')) }}" required
                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('received_date') border-red-500 @enderror">
                                 @error('received_date')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -166,7 +163,8 @@
                                 <label for="amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Hoeveelheid <span class="text-red-500">*</span>
                                 </label>
-                                <input type="number" name="amount" id="amount" value="{{ old('amount') }}" required min="1"
+                                <input type="number" name="amount" id="amount" value="{{ old('amount', $foodstorage->amount) }}" 
+                                       required min="0"
                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('amount') border-red-500 @enderror"
                                        placeholder="Bijv. 10">
                                 @error('amount')
@@ -179,7 +177,7 @@
                                 <label for="unit" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Eenheid <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" name="unit" id="unit" value="{{ old('unit') }}" required
+                                <input type="text" name="unit" id="unit" value="{{ old('unit', $foodstorage->unit) }}" required
                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('unit') border-red-500 @enderror"
                                        placeholder="Bijv. kg, stuks, liter">
                                 @error('unit')
@@ -192,7 +190,8 @@
                                 <label for="weight_per_unit" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Gewicht per eenheid (kg)
                                 </label>
-                                <input type="number" name="weight_per_unit" id="weight_per_unit" value="{{ old('weight_per_unit') }}" 
+                                <input type="number" name="weight_per_unit" id="weight_per_unit" 
+                                       value="{{ old('weight_per_unit', $foodstorage->weight_per_unit) }}" 
                                        step="0.001" min="0"
                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('weight_per_unit') border-red-500 @enderror"
                                        placeholder="Bijv. 0.250">
@@ -209,7 +208,7 @@
                             </label>
                             <textarea name="opmerking" id="opmerking" rows="3"
                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                      placeholder="Eventuele opmerkingen over het product">{{ old('opmerking') }}</textarea>
+                                      placeholder="Eventuele opmerkingen over het product">{{ old('opmerking', $foodstorage->opmerking) }}</textarea>
                         </div>
 
                         <!-- Submit buttons -->
@@ -220,7 +219,7 @@
                             </a>
                             <button type="submit" 
                                     class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                Product Toevoegen
+                                Product Bijwerken
                             </button>
                         </div>
                     </form>

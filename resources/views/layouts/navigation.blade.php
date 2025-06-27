@@ -16,7 +16,7 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                     <x-nav-link :href="route('foodstorage.index')" :active="request()->routeIs('foodstorage.*')">
-                        {{ __('Food Storage') }}
+                        {{ __('Voorraad beheer') }}
                     </x-nav-link>
                     @if (auth()->user() && auth()->user()->hasRole('Admin'))
                         <x-nav-link :href="route('customers.index')"  :active="request()->routeIs('test')">
