@@ -37,7 +37,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/voedselpakketten', [FoodPackageController::class, 'index'])->name('food_packages.index');
     Route::get('/voedselpakketten/create', [FoodPackageController::class, 'create'])->name('food_packages.create');
     Route::post('/voedselpakketten', [FoodPackageController::class, 'store'])->name('food_packages.store');
-
+    Route::get('/voedselpakketten/{food_package}', [FoodPackageController::class, 'show'])->name('food_packages.show');
+    Route::get('/voedselpakketten/{food_package}/edit', [FoodPackageController::class, 'edit'])->name('food_packages.edit');
+    Route::patch('/voedselpakketten/{food_package}', [FoodPackageController::class, 'update'])->name('food_packages.update');
+    Route::delete('/voedselpakketten/{food_package}', [FoodPackageController::class, 'destroy'])->name('food_packages.destroy');
 });
 
 Route::post('/toggle-maintenance', [MaintenanceController::class, 'toggle'])->name('toggle.maintenance');
