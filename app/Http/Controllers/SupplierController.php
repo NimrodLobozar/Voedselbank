@@ -16,6 +16,7 @@ class SupplierController extends Controller
         $request->validate([
             'search' => 'nullable|string|max:255',
             'supplier_type' => 'nullable|string|in:Supermarket,Farmer,Wholesaler,Individual',
+            'order_status' => 'nullable|string|in:onderweg,in_behandeling,geleverd,actief',
         ]);
 
         $query = Supplier::query();
@@ -29,6 +30,23 @@ class SupplierController extends Controller
         if ($request->filled('search')) {
             $searchTerm = trim($request->search);
             $query->where('name', 'LIKE', '%' . $searchTerm . '%');
+        }
+
+        // Filter by order status
+        if ($request->filled('order_status')) {
+            $orderStatus = $request->order_status;
+
+            if ($orderStatus === 'actief') {
+                // Show suppliers WITHOUT active orders (no onderweg or in_behandeling status)
+                $query->whereDoesntHave('foodStorages', function ($q) {
+                    $q->whereIn('status', ['onderweg', 'in_behandeling']);
+                });
+            } else {
+                // Show suppliers with specific order status
+                $query->whereHas('foodStorages', function ($q) use ($orderStatus) {
+                    $q->where('status', $orderStatus);
+                });
+            }
         }
 
         $suppliers = $query->orderBy('id', 'desc')->get();
@@ -169,13 +187,13 @@ class SupplierController extends Controller
         try {
             $supplier = Supplier::findOrFail($id);
 
-            // Check if supplier has any related produce/products using relationship
-            if ($supplier->produce()->exists()) {
+            // Check if supplier has any active orders (onderweg or in_behandeling)
+            if ($supplier->hasActiveOrders()) {
                 return redirect()->route('suppliers.index')
-                    ->with('error', 'Leverancier verwijderen is mislukt, er zijn nog bestellingen ingepland voor deze leverancier.');
+                    ->with('error', 'Leverancier kan niet worden verwijderd. Er zijn nog actieve bestellingen (onderweg of in behandeling) van deze leverancier.');
             }
 
-            // If no related records, proceed with deletion
+            // If no active orders, proceed with deletion
             $supplier->delete();
 
             return redirect()->route('suppliers.index')->with('success', 'Leverancier succesvol verwijderd.');
