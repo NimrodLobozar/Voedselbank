@@ -19,7 +19,9 @@
                         <x-nav-link :href="route('customers.index')"  :active="request()->routeIs('test')">
                             {{ __('Klanten') }}
                         </x-nav-link>
-                       
+                        <x-nav-link :href="route('suppliers.index')" :active="request()->routeIs('suppliers.*')">
+                            {{ __('Suppliers') }}
+                        </x-nav-link>
                     @endif
 
                     @if (auth()->user() && auth()->user()->hasRole('Admin'))
@@ -98,7 +100,6 @@
                 <x-responsive-nav-link :href="route('customers.index')" :active="request()->routeIs('customer.index')">
                     {{ __('Klanten') }}
                 </x-responsive-nav-link>
-
             @endif
         </div>
 
