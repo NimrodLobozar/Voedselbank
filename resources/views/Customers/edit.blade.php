@@ -80,13 +80,13 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium mb-1">Toevoeging</label>
-                                    <input type="text" name="addition" value="{{ old('addition', $customer->addition) }}"
+                                    <input type="text" name="addition" value="{{ old('addition', $customer->addition) }}" maxlength="10"
                                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-800">
                                     @error('addition')<span class="text-red-500 text-xs">{{ $message }}</span>@enderror
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium mb-1">Postcode *</label>
-                                    <input type="text" name="postal_code" value="{{ old('postal_code', $customer->postal_code) }}" required
+                                    <input type="text" name="postal_code" value="{{ old('postal_code', $customer->postal_code) }}" maxlength="7" required
                                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-800">
                                     @error('postal_code')<span class="text-red-500 text-xs">{{ $message }}</span>@enderror
                                 </div>
@@ -111,9 +111,9 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium mb-1">Email *</label>
-                                    <input type="email" name="email" value="{{ old('email', $customer->email) }}" required
+                                    <input type="email" name="customer_email" value="{{ old('customer_email', $customer->email) }}" required
                                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-800">
-                                    @error('email')<span class="text-red-500 text-xs">{{ $message }}</span>@enderror
+                                    @error('customer_email')<span class="text-red-500 text-xs">{{ $message }}</span>@enderror
                                 </div>
                             </div>
                         </div>
@@ -121,12 +121,30 @@
                         <!-- Household Information -->
                         <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                             <h4 class="font-semibold mb-4">Huishouden Informatie</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium mb-1">Huishoudgrootte *</label>
                                     <input type="number" name="household_size" value="{{ old('household_size', $customer->household_size) }}" min="1" max="20" required
                                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-800">
                                     @error('household_size')<span class="text-red-500 text-xs">{{ $message }}</span>@enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Aantal Volwassenen *</label>
+                                    <input type="number" name="adults_count" value="{{ old('adults_count', $customer->adults_count) }}" min="0" max="20" required
+                                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-800">
+                                    @error('adults_count')<span class="text-red-500 text-xs">{{ $message }}</span>@enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Aantal Kinderen *</label>
+                                    <input type="number" name="children_count" value="{{ old('children_count', $customer->children_count) }}" min="0" max="20" required
+                                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-800">
+                                    @error('children_count')<span class="text-red-500 text-xs">{{ $message }}</span>@enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Aantal Baby's *</label>
+                                    <input type="number" name="babies_count" value="{{ old('babies_count', $customer->babies_count) }}" min="0" max="20" required
+                                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-800">
+                                    @error('babies_count')<span class="text-red-500 text-xs">{{ $message }}</span>@enderror
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium mb-1">Inkomen (€)</label>
@@ -139,6 +157,31 @@
                                     <input type="date" name="registration_date" value="{{ old('registration_date', $customer->registration_date) }}" required
                                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-800">
                                     @error('registration_date')<span class="text-red-500 text-xs">{{ $message }}</span>@enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dietary Preferences -->
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h4 class="font-semibold mb-4">Dieetvoorkeuren</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="flex items-center">
+                                    <input type="hidden" name="no_pork" value="0">
+                                    <input type="checkbox" name="no_pork" value="1" {{ old('no_pork', $customer->no_pork) ? 'checked' : '' }}
+                                           class="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <span class="text-sm">Geen varkensvlees</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="hidden" name="is_vegan" value="0">
+                                    <input type="checkbox" name="is_vegan" value="1" {{ old('is_vegan', $customer->is_vegan) ? 'checked' : '' }}
+                                           class="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <span class="text-sm">Veganistisch</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="hidden" name="is_vegetarian" value="0">
+                                    <input type="checkbox" name="is_vegetarian" value="1" {{ old('is_vegetarian', $customer->is_vegetarian) ? 'checked' : '' }}
+                                           class="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <span class="text-sm">Vegetarisch</span>
                                 </div>
                             </div>
                         </div>

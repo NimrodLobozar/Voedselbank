@@ -35,6 +35,11 @@ class DatabaseSeeder extends Seeder
             'last_name' => 'User',
             'email' => 'test@example.com',
             'postal_code' => '1234AB',
+            'adults_count' => 2,
+            'children_count' => 1,
+            'babies_count' => 0,
+            'no_pork' => true,
+            'is_vegetarian' => true,
         ]);
 
         // Create person record for the test user
@@ -71,6 +76,11 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@example.com',
             'income' => 3000.00,
             'postal_code' => '5678CD',
+            'adults_count' => 2,
+            'children_count' => 2,
+            'babies_count' => 1,
+            'is_vegan' => false,
+            'no_pork' => false,
         ]);
 
         // Create person record for the admin user
@@ -92,6 +102,29 @@ class DatabaseSeeder extends Seeder
             'datum_gewijzigd' => now(),
         ]);
 
+        // Create additional test customers with varied preferences
+        Customer::factory(10)->create()->each(function ($customer) {
+            $customer->update([
+                'adults_count' => fake()->numberBetween(1, 3),
+                'children_count' => fake()->numberBetween(0, 4),
+                'babies_count' => fake()->numberBetween(0, 2),
+                'no_pork' => fake()->boolean(30),
+                'is_vegan' => fake()->boolean(10),
+                'is_vegetarian' => fake()->boolean(20),
+            ]);
+        });
+
+        // Seed allergy data
+        $allergies = ['Pinda', 'Noten', 'Melk', 'Eieren', 'Soja', 'Tarwe', 'Vis', 'Schaaldieren', 'Sesam', 'Gluten', 'Lactose', 'Sulfieten'];
+        foreach ($allergies as $allergy) {
+            DB::table('allergy')->insert([
+                'allergy_name' => $allergy,
+                'is_actief' => true,
+                'datum_aangemaakt' => now(),
+                'datum_gewijzigd' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         // Create a test supplier
         Supplier::factory(20)->create();
 
