@@ -19,12 +19,30 @@ class CustomerController extends Controller
         try {
             $customers = DB::select('CALL sp_GetCustomers()');
             
-            if ($request->filled('search')) {
-                $search = strtolower($request->search);
+            // Apply name search filter
+            if ($request->filled('name_search')) {
+                $search = strtolower($request->name_search);
                 $customers = array_filter($customers, function ($customer) use ($search) {
-                    return str_contains(strtolower($customer->full_name), $search) ||
-                           str_contains(strtolower($customer->email), $search) ||
-                           str_contains(strtolower($customer->full_address), $search);
+                    return str_contains(strtolower($customer->full_name), $search);
+                });
+            }
+            
+            // Apply status filter
+            if ($request->filled('status_filter')) {
+                $status = (bool) $request->status_filter;
+                $customers = array_filter($customers, function ($customer) use ($status) {
+                    return (bool) $customer->is_actief === $status;
+                });
+            }
+            
+            // Apply household size filter
+            if ($request->filled('household_filter')) {
+                $householdFilter = $request->household_filter;
+                $customers = array_filter($customers, function ($customer) use ($householdFilter) {
+                    if ($householdFilter === '5+') {
+                        return $customer->household_size >= 5;
+                    }
+                    return $customer->household_size == $householdFilter;
                 });
             }
 

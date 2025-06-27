@@ -16,11 +16,9 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     
                     <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-lg font-semibold">Nieuwe Klant Aanmaken</h3>
-                        <a href="{{ route('customers.index') }}" 
-                           class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                         <x-test.button href="{{ route('customers.index') }}">
                             Terug naar Overzicht
-                        </a>
+                        </x-test.button>
                     </div>
 
                     <form method="POST" action="{{ route('customers.store') }}" class="space-y-6">
@@ -178,14 +176,12 @@
 
                         <!-- Submit Buttons -->
                         <div class="flex justify-end space-x-4">
-                            <a href="{{ route('customers.index') }}" 
-                               class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                             <x-test.button href="{{ route('customers.index') }}">
                                 Annuleren
-                            </a>
-                            <button type="submit" 
-                                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                Klant Aanmaken
-                            </button>
+                            </x-test.button>
+                             <x-test.button type="submit">
+                                Opslaan
+                            </x-test.button>
                         </div>
                     </form>
 

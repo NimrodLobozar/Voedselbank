@@ -1,5 +1,9 @@
 <!-- From Uiverse.io by MuhammadHasann --> 
-<button>
+@if(isset($href))
+<a href="{{ $href }}" class="star-button">
+@else
+<button {{ $attributes }} class="star-button">
+@endif
   {{ $slot }}
   <div class="star-1">
     <svg
@@ -115,12 +119,15 @@
       </g>
     </svg>
   </div>
+@if(isset($href))
+</a>
+@else
 </button>
-
+@endif
 
 <style>
     /* From Uiverse.io by MuhammadHasann */ 
-button {
+.star-button {
   position: relative;
   padding: 12px 35px;
   background: #fec195;
@@ -132,9 +139,11 @@ button {
   box-shadow: 0 0 0 #fec1958c;
   transition: all 0.3s ease-in-out;
   cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
 }
 
-.star-1 {
+.star-button .star-1 {
   position: absolute;
   top: 20%;
   left: 20%;
@@ -145,7 +154,7 @@ button {
   transition: all 1s cubic-bezier(0.05, 0.83, 0.43, 0.96);
 }
 
-.star-2 {
+.star-button .star-2 {
   position: absolute;
   top: 45%;
   left: 45%;
@@ -156,7 +165,7 @@ button {
   transition: all 1s cubic-bezier(0, 0.4, 0, 1.01);
 }
 
-.star-3 {
+.star-button .star-3 {
   position: absolute;
   top: 40%;
   left: 40%;
@@ -167,7 +176,7 @@ button {
   transition: all 1s cubic-bezier(0, 0.4, 0, 1.01);
 }
 
-.star-4 {
+.star-button .star-4 {
   position: absolute;
   top: 20%;
   left: 40%;
@@ -178,7 +187,7 @@ button {
   transition: all 0.8s cubic-bezier(0, 0.4, 0, 1.01);
 }
 
-.star-5 {
+.star-button .star-5 {
   position: absolute;
   top: 25%;
   left: 45%;
@@ -189,7 +198,7 @@ button {
   transition: all 0.6s cubic-bezier(0, 0.4, 0, 1.01);
 }
 
-.star-6 {
+.star-button .star-6 {
   position: absolute;
   top: 5%;
   left: 50%;
@@ -200,13 +209,13 @@ button {
   transition: all 0.8s ease;
 }
 
-button:hover {
+.star-button:hover {
   background: transparent;
   color: #fec195;
   box-shadow: 0 0 25px #fec1958c;
 }
 
-button:hover .star-1 {
+.star-button:hover .star-1 {
   position: absolute;
   top: -80%;
   left: -30%;
@@ -216,7 +225,7 @@ button:hover .star-1 {
   z-index: 2;
 }
 
-button:hover .star-2 {
+.star-button:hover .star-2 {
   position: absolute;
   top: -25%;
   left: 10%;
@@ -226,7 +235,7 @@ button:hover .star-2 {
   z-index: 2;
 }
 
-button:hover .star-3 {
+.star-button:hover .star-3 {
   position: absolute;
   top: 55%;
   left: 25%;
@@ -236,7 +245,7 @@ button:hover .star-3 {
   z-index: 2;
 }
 
-button:hover .star-4 {
+.star-button:hover .star-4 {
   position: absolute;
   top: 30%;
   left: 80%;
@@ -246,7 +255,7 @@ button:hover .star-4 {
   z-index: 2;
 }
 
-button:hover .star-5 {
+.star-button:hover .star-5 {
   position: absolute;
   top: 25%;
   left: 115%;
@@ -256,7 +265,7 @@ button:hover .star-5 {
   z-index: 2;
 }
 
-button:hover .star-6 {
+.star-button:hover .star-6 {
   position: absolute;
   top: 5%;
   left: 60%;
@@ -266,7 +275,7 @@ button:hover .star-6 {
   z-index: 2;
 }
 
-.fil0 {
+.star-button .fil0 {
   fill: #fffdef;
 }
 </style>
