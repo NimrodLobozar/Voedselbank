@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
         $admin = User::factory()->create([
             'name' => 'Admin User',
             'email' => 'admin@example.com',
-            'password' => bcrypt('admin1234'), // Use bcrypt for password hashing
+            'password' => bcrypt('dmin1234'), // Use bcrypt for password hashing
         ]);
 
         // Create person record for the user
