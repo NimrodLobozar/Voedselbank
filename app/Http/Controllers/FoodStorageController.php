@@ -10,105 +10,119 @@ class FoodStorageController extends Controller
 {
     public function index(Request $request)
     {
-        $query = FoodStorage::with(['produces', 'expiringSoonProduces']);
+        // We tonen producten (produce) voor voorraad beheer, niet storage
+        $query = Produce::with(['foodStorage', 'supplier']);
 
-        // Filter op name
+        // Filter op streepjescode (ID als barcode)
+        if ($request->filled('barcode')) {
+            $query->where('id', 'like', '%' . $request->barcode . '%');
+        }
+
+        // Filter op productnaam
         if ($request->filled('name')) {
             $query->where('name', 'like', '%' . $request->name . '%');
         }
 
-        // Filter op location
-        if ($request->filled('location')) {
-            $query->where('location', 'like', '%' . $request->location . '%');
+        // Filter op categorie
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
         }
 
-        // Filter op storage type
-        if ($request->filled('storage_type')) {
-            $query->where('storage_type', $request->storage_type);
-        }
-
-        // Sorteren
+        // Sorteren op alle eigenschappen
         $sort = $request->get('sort', 'name');
         $direction = $request->get('direction', 'asc');
-        if (in_array($sort, ['name', 'location', 'capacity', 'storage_type'])) {
+        if (in_array($sort, ['id', 'name', 'category', 'amount', 'expiry_date'])) {
             $query->orderBy($sort, $direction);
         }
 
-        $storages = $query->get();
+        // Alleen actieve producten
+        $query->where('is_actief', true);
 
-        // Stats voor dashboard
-        $stats = [
-            'total_storages' => FoodStorage::where('is_actief', true)->count(),
-            'total_products' => Produce::where('is_actief', true)->count(),
-            'expiring_soon' => Produce::where('expiry_date', '<=', now()->addDays(7))->where('is_actief', true)->count(),
-            'nearly_full_storages' => $storages->filter(function($storage) {
-                return $storage->occupancy_percentage > 80;
-            })->count()
-        ];
+        $produces = $query->get();
 
-        return view('foodstorage.index', compact('storages', 'stats'));
+        // Categories voor filter dropdown
+        $categories = Produce::select('category')->distinct()->pluck('category');
+
+        return view('foodstorage.index', compact('produces', 'categories'));
     }
 
     public function create()
     {
-        return view('foodstorage.create');
+        $storages = FoodStorage::where('is_actief', true)->get();
+        $suppliers = Supplier::where('is_actief', true)->get();
+        $categories = ['Groente', 'Fruit', 'Vlees', 'Zuivel', 'Granen', 'Conserven', 'Diepvries', 'Brood', 'Overig'];
+        
+        return view('foodstorage.create', compact('storages', 'suppliers', 'categories'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'supplier_id' => 'required|exists:supplier,id',
+            'food_storage_id' => 'required|exists:food_storage,id',
             'name' => 'required|string|max:100',
-            'location' => 'required|string|max:200',
-            'capacity' => 'required|integer|min:1',
-            'temperature_min' => 'nullable|numeric',
-            'temperature_max' => 'nullable|numeric',
-            'storage_type' => 'required|in:Refrigerated,Frozen,Dry,Fresh',
+            'brand' => 'nullable|string|max:100',
+            'category' => 'required|in:Groente,Fruit,Vlees,Zuivel,Granen,Conserven,Diepvries,Brood,Overig',
+            'expiry_date' => 'required|date|after:today',
+            'received_date' => 'required|date|before_or_equal:today',
+            'amount' => 'required|integer|min:1',
+            'unit' => 'required|string|max:20',
+            'weight_per_unit' => 'nullable|numeric|min:0',
         ]);
 
-        FoodStorage::create($validated);
+        $validated['is_actief'] = true;
+        $validated['datum_aangemaakt'] = now();
+        $validated['datum_gewijzigd'] = now();
 
-        return redirect()->route('foodstorage.index')->with('success', 'Food storage toegevoegd!');
+        Produce::create($validated);
+
+        return redirect()->route('foodstorage.index')->with('success', 'Product toegevoegd aan voorraad!');
     }
 
-    public function edit(FoodStorage $foodstorage)
+    public function edit(Produce $foodstorage)
     {
-        return view('foodstorage.edit', compact('foodstorage'));
+        $storages = FoodStorage::where('is_actief', true)->get();
+        $suppliers = Supplier::where('is_actief', true)->get();
+        $categories = ['Groente', 'Fruit', 'Vlees', 'Zuivel', 'Granen', 'Conserven', 'Diepvries', 'Brood', 'Overig'];
+        
+        return view('foodstorage.edit', compact('foodstorage', 'storages', 'suppliers', 'categories'));
     }
 
-    public function update(Request $request, FoodStorage $foodstorage)
+    public function update(Request $request, Produce $foodstorage)
     {
         $validated = $request->validate([
+            'supplier_id' => 'required|exists:supplier,id',
+            'food_storage_id' => 'required|exists:food_storage,id',
             'name' => 'required|string|max:100',
-            'location' => 'required|string|max:200',
-            'capacity' => 'required|integer|min:1',
-            'temperature_min' => 'nullable|numeric',
-            'temperature_max' => 'nullable|numeric',
-            'storage_type' => 'required|in:Refrigerated,Frozen,Dry,Fresh',
+            'brand' => 'nullable|string|max:100',
+            'category' => 'required|in:Groente,Fruit,Vlees,Zuivel,Granen,Conserven,Diepvries,Brood,Overig',
+            'expiry_date' => 'required|date',
+            'received_date' => 'required|date',
+            'amount' => 'required|integer|min:0',
+            'unit' => 'required|string|max:20',
+            'weight_per_unit' => 'nullable|numeric|min:0',
         ]);
 
+        $validated['datum_gewijzigd'] = now();
         $foodstorage->update($validated);
 
-        return redirect()->route('foodstorage.index')->with('success', 'Food storage bijgewerkt!');
+        return redirect()->route('foodstorage.index')->with('success', 'Product bijgewerkt!');
     }
 
-    public function destroy(FoodStorage $foodstorage)
+    public function destroy(Produce $foodstorage)
     {
-        $foodstorage->delete();
+        // Check of product al in voedselpakket zit
+        $inFoodPackage = \DB::table('food_package_produce')
+            ->where('produce_id', $foodstorage->id)
+            ->exists();
 
-        return redirect()->route('foodstorage.index')->with('success', 'Food storage verwijderd!');
-    }
+        if ($inFoodPackage) {
+            return redirect()->route('foodstorage.index')
+                ->with('error', 'Product kan niet verwijderd worden: al opgenomen in voedselpakket.');
+        }
 
-    public function show(FoodStorage $foodstorage)
-    {
-        $foodstorage->load(['produces.supplier']);
-        
-        // Producten in deze storage
-        $produces = $foodstorage->produces()
-            ->with('supplier')
-            ->where('is_actief', true)
-            ->orderBy('expiry_date', 'asc')
-            ->get();
+        $foodstorage->update(['is_actief' => false]);
 
-        return view('foodstorage.show', compact('foodstorage', 'produces'));
+        return redirect()->route('foodstorage.index')->with('success', 'Product verwijderd uit voorraad!');
     }
 }
