@@ -17,11 +17,9 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        // Check if the authenticated user has an active admin role
         $user = Auth::user();
 
-        if (!$user || !$user->roles()->where('name', 'admin')->where('is_active', true)->exists()) {
-            // If the user is not an admin or the role is inactive, deny access
+        if (!$user || !$user->hasRole('Admin')) {
             abort(403, 'Unauthorized access.');
         }
 
