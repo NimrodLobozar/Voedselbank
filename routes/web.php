@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\MaintenanceController;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\FoodPackageController;
 
 Route::get('/', function () {
