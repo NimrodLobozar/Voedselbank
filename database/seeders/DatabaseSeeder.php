@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Role;
 use App\Models\Person;
 use Illuminate\Support\Facades\DB;
+use App\Models\Supplier;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -117,5 +118,8 @@ class DatabaseSeeder extends Seeder
             'datum_aangemaakt' => now(),
             'datum_gewijzigd' => now(),
         ]);
+
+        // Create a test supplier
+        // Supplier::factory(20)->create();
     }
 }
