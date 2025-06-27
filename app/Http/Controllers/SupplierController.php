@@ -10,11 +10,26 @@ use App\Models\Produce;
 
 class SupplierController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Logic to list all suppliers
-        $suppliers = Supplier::orderBy('id', 'desc')->get();
-        return view('suppliers.index', compact('suppliers'));
+        $query = Supplier::query();
+
+        // Search by supplier type
+        if ($request->filled('supplier_type')) {
+            $query->where('supplier_type', $request->supplier_type);
+        }
+
+        // Search by name
+        if ($request->filled('search')) {
+            $query->where('name', 'LIKE', '%' . $request->search . '%');
+        }
+
+        $suppliers = $query->orderBy('id', 'desc')->get();
+
+        // Get all unique supplier types for the filter dropdown
+        $supplierTypes = Supplier::select('supplier_type')->distinct()->pluck('supplier_type');
+
+        return view('suppliers.index', compact('suppliers', 'supplierTypes'));
     }
 
     public function create()
