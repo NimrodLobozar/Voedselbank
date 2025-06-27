@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create a test user (customer)
+        // Create test users first
         $testUser = User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
@@ -92,91 +92,44 @@ class DatabaseSeeder extends Seeder
             'datum_gewijzigd' => now(),
         ]);
 
-        // Create a test supplier
+        // Create suppliers using factory
         Supplier::factory(20)->create();
+
+        // Create FoodStorage test data
+        FoodStorage::factory(10)->create();
 
         // Create additional test customers
         Customer::factory(10)->create([
             'postal_code' => fake()->regexify('[1-9][0-9]{3}[A-Z]{2}'),
         ]);
+
+        FoodPackage::factory(10)->create();
+
+        // Create produce items using factory (includes test data)
+        Produce::factory(15)->create();
+
+        // Create produce items manually to ensure datetime fields are set
+        $suppliers = Supplier::pluck('id')->toArray();
+        $storages = FoodStorage::pluck('id')->toArray();
         
-        // Create FoodStorage test data
-        FoodStorage::factory(10)->create();
-
-        // Create Suppliers first
-        $suppliers = [
-            [
-                'name' => 'Albert Heijn Centrum',
-                'contact_person' => 'Maria van der Berg',
-                'phone' => '020-1234567',
-                'email' => 'donaties@ah.nl',
-                'address' => 'Hoofdstraat 123, 1000 AA Amsterdam',
-                'supplier_type' => 'Supermarket',
+        for ($i = 0; $i < 15; $i++) {
+            $now = now();
+            Produce::create([
+                'supplier_id' => fake()->randomElement($suppliers),
+                'food_storage_id' => fake()->randomElement($storages),
+                'name' => fake()->word(),
+                'brand' => fake()->optional()->company(),
+                'category' => fake()->randomElement(['Groente', 'Fruit', 'Vlees', 'Zuivel', 'Granen', 'Conserven', 'Diepvries', 'Brood', 'Overig']),
+                'expiry_date' => fake()->dateTimeBetween('now', '+1 year')->format('Y-m-d'),
+                'received_date' => fake()->dateTimeBetween('-1 month', 'now')->format('Y-m-d'),
+                'amount' => fake()->numberBetween(1, 100),
+                'unit' => fake()->randomElement(['stuks', 'kg', 'liter', 'zakken']),
+                'weight_per_unit' => fake()->optional()->randomFloat(3, 0.1, 5),
                 'is_actief' => true,
-                'datum_aangemaakt' => now(),
-                'datum_gewijzigd' => now(),
-            ],
-            [
-                'name' => 'Boerderij De Groene Weide',
-                'contact_person' => 'Jan Bakker',
-                'phone' => '0312-567890',
-                'email' => 'info@groeneweide.nl',
-                'address' => 'Polderweg 45, 3600 BB Maarssen',
-                'supplier_type' => 'Farmer',
-                'is_actief' => true,
-                'datum_aangemaakt' => now(),
-                'datum_gewijzigd' => now(),
-            ],
-            [
-                'name' => 'Groothandel Fresh Foods',
-                'contact_person' => 'Sarah Ahmed',
-                'phone' => '010-9876543',
-                'email' => 'donaties@freshfoods.nl',
-                'address' => 'Industrieweg 78, 3000 CC Rotterdam',
-                'supplier_type' => 'Wholesaler',
-                'is_actief' => true,
-                'datum_aangemaakt' => now(),
-                'datum_gewijzigd' => now(),
-            ]
-        ];
-
-        foreach ($suppliers as $supplier) {
-            Supplier::create($supplier);
-        }
-
-        // Get suppliers and storages for produces
-        $supplierIds = Supplier::pluck('id')->toArray();
-        $storageIds = FoodStorage::pluck('id')->toArray();
-
-        // Create test produce items (alleen test data)
-        $testProduces = [
-            ['name' => 'Appels', 'category' => 'Fruit', 'amount' => 50, 'unit' => 'kg'],
-            ['name' => 'Brood', 'category' => 'Brood', 'amount' => 20, 'unit' => 'stuks'],
-            ['name' => 'Melk', 'category' => 'Zuivel', 'amount' => 30, 'unit' => 'liter'],
-            ['name' => 'Rijst', 'category' => 'Granen', 'amount' => 25, 'unit' => 'kg'],
-            ['name' => 'Tomaten', 'category' => 'Groente', 'amount' => 15, 'unit' => 'kg'],
-        ];
-
-        $storageIds = FoodStorage::pluck('id')->toArray();
-
-        foreach ($testProduces as $produce) {
-            if (!empty($storageIds)) {
-                Produce::create([
-                    'supplier_id' => 1, // Assuming supplier ID 1 exists
-                    'food_storage_id' => $storageIds[0], // First storage
-                    'name' => $produce['name'],
-                    'brand' => null,
-                    'category' => $produce['category'],
-                    'expiry_date' => now()->addDays(rand(5, 30)),
-                    'received_date' => now()->subDays(rand(0, 5)),
-                    'amount' => $produce['amount'],
-                    'unit' => $produce['unit'],
-                    'weight_per_unit' => 1.0,
-                    'is_actief' => true,
-                    'datum_aangemaakt' => now(),
-                    'datum_gewijzigd' => now(),
-                ]);
-            }
+                'opmerking' => fake()->optional()->sentence(),
+                'datum_aangemaakt' => $now,
+                'datum_gewijzigd' => $now,
+            ]);
         }
     }
 }

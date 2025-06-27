@@ -8,20 +8,23 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h1 class="text-2xl font-bold mb-6">Productvoorraad Overzicht</h1>
-
-                    <!-- Search and Filter Form -->
-                    <form method="GET" action="{{ route('foodstorage.index') }}" class="mb-6">
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                            <input type="text" name="barcode" class="rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900" 
-                                   placeholder="Zoek op streepjescode (ID)" value="{{ request('barcode') }}">
-                            
-                            <input type="text" name="name" class="rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900" 
-                                   placeholder="Zoek op productnaam" value="{{ request('name') }}">
-                            
-                            <select name="category" class="rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900">
+            <!-- Filter Form -->
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                <div class="p-6">
+                    <form method="GET" action="{{ route('foodstorage.index') }}" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Streepjescode</label>
+                            <input type="text" name="barcode" value="{{ request('barcode') }}" 
+                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Productnaam</label>
+                            <input type="text" name="name" value="{{ request('name') }}" 
+                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Categorie</label>
+                            <select name="category" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
                                 <option value="">Alle categorieën</option>
                                 @foreach($categories as $category)
                                     <option value="{{ $category }}" {{ request('category') == $category ? 'selected' : '' }}>
@@ -29,82 +32,105 @@
                                     </option>
                                 @endforeach
                             </select>
-                            
-                            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                                Zoeken
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
+                            <select name="status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                <option value="">Alle statussen</option>
+                                @foreach($statuses as $value => $label)
+                                    <option value="{{ $value }}" {{ request('status') == $value ? 'selected' : '' }}>
+                                        {{ $label }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="flex items-end">
+                            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                Filteren
                             </button>
                         </div>
                     </form>
+                </div>
+            </div>
 
-                    <!-- Products Table -->
+            <!-- Products Table -->
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    <div class="mb-4">
+                        <a href="{{ route('foodstorage.create') }}" 
+                           class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                            Nieuw Product Toevoegen
+                        </a>
+                    </div>
+
                     <div class="overflow-x-auto">
-                        <table class="min-w-full border-collapse border border-gray-300 dark:border-gray-700">
-                            <thead class="bg-gray-50 dark:bg-gray-700">
-                                <tr>
-                                    <th class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left">
-                                        <a href="{{ route('foodstorage.index', array_merge(request()->all(), ['sort' => 'id', 'direction' => request('direction') === 'asc' ? 'desc' : 'asc'])) }}" 
-                                           class="hover:underline">Streepjescode (ID)</a>
-                                    </th>
-                                    <th class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left">
-                                        <a href="{{ route('foodstorage.index', array_merge(request()->all(), ['sort' => 'name', 'direction' => request('direction') === 'asc' ? 'desc' : 'asc'])) }}" 
-                                           class="hover:underline">Productnaam</a>
-                                    </th>
-                                    <th class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left">
-                                        <a href="{{ route('foodstorage.index', array_merge(request()->all(), ['sort' => 'category', 'direction' => request('direction') === 'asc' ? 'desc' : 'asc'])) }}" 
-                                           class="hover:underline">Categorie</a>
-                                    </th>
-                                    <th class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left">
-                                        <a href="{{ route('foodstorage.index', array_merge(request()->all(), ['sort' => 'amount', 'direction' => request('direction') === 'asc' ? 'desc' : 'asc'])) }}" 
-                                           class="hover:underline">Aantal</a>
-                                    </th>
-                                    <th class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left">Brand</th>
-                                    <th class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left">
-                                        <a href="{{ route('foodstorage.index', array_merge(request()->all(), ['sort' => 'expiry_date', 'direction' => request('direction') === 'asc' ? 'desc' : 'asc'])) }}" 
-                                           class="hover:underline">Vervaldatum</a>
-                                    </th>
-                                    <th class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left">Locatie</th>
-                                    <th class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left">Acties</th>
+                        <table class="min-w-full table-auto">
+                            <thead>
+                                <tr class="bg-gray-50 dark:bg-gray-700">
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Naam</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Categorie</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Voorraad</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Vervaldatum</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Acties</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                 @forelse($produces as $produce)
-                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 {{ $produce->isExpired() ? 'bg-red-50' : ($produce->isExpiringSoon() ? 'bg-yellow-50' : '') }}">
-                                    <td class="border border-gray-300 dark:border-gray-600 px-4 py-2">{{ $produce->id }}</td>
-                                    <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 font-medium">{{ $produce->name }}</td>
-                                    <td class="border border-gray-300 dark:border-gray-600 px-4 py-2">
-                                        <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">{{ $produce->category }}</span>
-                                    </td>
-                                    <td class="border border-gray-300 dark:border-gray-600 px-4 py-2">{{ $produce->amount }} {{ $produce->unit }}</td>
-                                    <td class="border border-gray-300 dark:border-gray-600 px-4 py-2">{{ $produce->brand ?? 'N/A' }}</td>
-                                    <td class="border border-gray-300 dark:border-gray-600 px-4 py-2">
-                                        <span class="{{ $produce->isExpired() ? 'text-red-600 font-bold' : ($produce->isExpiringSoon() ? 'text-yellow-600 font-bold' : '') }}">
-                                            {{ $produce->expiry_date->format('d-m-Y') }}
-                                        </span>
-                                    </td>
-                                    <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm">{{ $produce->foodStorage->name ?? 'N/A' }}</td>
-                                    <td class="border border-gray-300 dark:border-gray-600 px-4 py-2">
-                                        <div class="flex gap-2">
-                                            <a href="{{ route('foodstorage.edit', $produce) }}" class="px-2 py-1 bg-yellow-500 text-white rounded text-xs hover:bg-yellow-600">Wijzig</a>
-                                            <form action="{{ route('foodstorage.destroy', $produce) }}" method="POST" style="display:inline;">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                                            {{ $produce->id }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                            {{ $produce->name }}
+                                            @if($produce->brand)
+                                                <br><small class="text-gray-500">{{ $produce->brand }}</small>
+                                            @endif
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                            {{ $produce->category }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                            {{ $produce->amount }} {{ $produce->unit }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            @if($produce->foodStorage)
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $produce->foodStorage->status_color }}">
+                                                    {{ $produce->foodStorage->status_label }}
+                                                </span>
+                                            @else
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                                                    Geen status
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                            {{ \Carbon\Carbon::parse($produce->expiry_date)->format('d-m-Y') }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <a href="{{ route('foodstorage.edit', $produce) }}" 
+                                               class="text-indigo-600 hover:text-indigo-900 mr-3">Bewerken</a>
+                                            <form method="POST" action="{{ route('foodstorage.destroy', $produce) }}" 
+                                                  class="inline-block"
+                                                  onsubmit="return confirm('Weet je zeker dat je dit product wilt verwijderen?')">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button class="px-2 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600" type="submit" 
-                                                        onclick="return confirm('Zeker weten? Product verwijderen uit voorraad?')">Verwijder</button>
+                                                <button type="submit" class="text-red-600 hover:text-red-900">
+                                                    Verwijderen
+                                                </button>
                                             </form>
-                                        </div>
-                                    </td>
-                                </tr>
+                                        </td>
+                                    </tr>
                                 @empty
-                                <tr>
-                                    <td colspan="8" class="border border-gray-300 dark:border-gray-600 px-4 py-8 text-center text-gray-500">Geen producten in voorraad gevonden.</td>
-                                </tr>
+                                    <tr>
+                                        <td colspan="7" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                            Geen producten gevonden.
+                                        </td>
+                                    </tr>
                                 @endforelse
                             </tbody>
                         </table>
-                    </div>
-
-                    <div class="mt-6">
-                        <a href="{{ route('foodstorage.create') }}" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Nieuw Product Toevoegen</a>
                     </div>
                 </div>
             </div>
