@@ -1,5 +1,4 @@
 <!-- From Uiverse.io by Lakshay-art --> 
-<div class="search-grid"></div>
 <div id="search-poda">
   <div class="search-glow"></div>
   <div class="search-darkBorderBg"></div>
