@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -111,11 +110,6 @@ class Produce extends Model
         }
 
         return null;
-
-    public function foodPackages()
-    {
-        return $this->belongsToMany(FoodPackage::class, 'food_package_produce', 'produce_id', 'food_package_id')
-            ->withPivot('quantity', 'created_at', 'updated_at');
     }
 
     public function hasStock($amount)
@@ -131,6 +125,5 @@ class Produce extends Model
     public function incrementStock($quantity)
     {
         $this->increment('amount', $quantity);
-
     }
 }
