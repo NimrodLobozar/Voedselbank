@@ -12,6 +12,12 @@ class SupplierController extends Controller
 {
     public function index(Request $request)
     {
+        // Validate search inputs
+        $request->validate([
+            'search' => 'nullable|string|max:255',
+            'supplier_type' => 'nullable|string|in:Supermarket,Farmer,Wholesaler,Individual',
+        ]);
+
         $query = Supplier::query();
 
         // Search by supplier type
@@ -21,7 +27,8 @@ class SupplierController extends Controller
 
         // Search by name
         if ($request->filled('search')) {
-            $query->where('name', 'LIKE', '%' . $request->search . '%');
+            $searchTerm = trim($request->search);
+            $query->where('name', 'LIKE', '%' . $searchTerm . '%');
         }
 
         $suppliers = $query->orderBy('id', 'desc')->get();
@@ -42,14 +49,35 @@ class SupplierController extends Controller
     {
         // Validate the request data
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:suppliers,name',
-            'contact_person' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
+            'name' => 'required|string|min:2|max:255|unique:suppliers,name',
+            'contact_person' => 'required|string|min:2|max:255',
+            'phone' => 'required|string|min:10|max:20|regex:/^[0-9\+\-\s\(\)]+$/',
             'email' => 'required|email|max:255|unique:suppliers,email',
-            'address' => 'required|string|max:500',
+            'address' => 'required|string|min:5|max:500',
             'supplier_type' => 'required|string|in:Supermarket,Farmer,Wholesaler,Individual',
             'is_actief' => 'sometimes|boolean',
             'opmerking' => 'nullable|string|max:1000',
+        ], [
+            'name.required' => 'Bedrijfsnaam is verplicht.',
+            'name.min' => 'Bedrijfsnaam moet minimaal 2 karakters bevatten.',
+            'name.max' => 'Bedrijfsnaam mag maximaal 255 karakters bevatten.',
+            'name.unique' => 'Een leverancier met deze naam bestaat al.',
+            'contact_person.required' => 'Contactpersoon is verplicht.',
+            'contact_person.min' => 'Contactpersoon moet minimaal 2 karakters bevatten.',
+            'contact_person.max' => 'Contactpersoon mag maximaal 255 karakters bevatten.',
+            'phone.required' => 'Telefoonnummer is verplicht.',
+            'phone.min' => 'Telefoonnummer moet minimaal 10 karakters bevatten.',
+            'phone.max' => 'Telefoonnummer mag maximaal 20 karakters bevatten.',
+            'phone.regex' => 'Telefoonnummer bevat ongeldige karakters.',
+            'email.required' => 'E-mailadres is verplicht.',
+            'email.email' => 'E-mailadres moet geldig zijn.',
+            'email.unique' => 'Een leverancier met dit e-mailadres bestaat al.',
+            'address.required' => 'Adres is verplicht.',
+            'address.min' => 'Adres moet minimaal 5 karakters bevatten.',
+            'address.max' => 'Adres mag maximaal 500 karakters bevatten.',
+            'supplier_type.required' => 'Leverancier type is verplicht.',
+            'supplier_type.in' => 'Geselecteerd leverancier type is ongeldig.',
+            'opmerking.max' => 'Opmerking mag maximaal 1000 karakters bevatten.',
         ]);
 
         try {
@@ -89,14 +117,35 @@ class SupplierController extends Controller
 
         // Validate the request data
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:suppliers,name,' . $id,
-            'contact_person' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
+            'name' => 'required|string|min:2|max:255|unique:suppliers,name,' . $id,
+            'contact_person' => 'required|string|min:2|max:255',
+            'phone' => 'required|string|min:10|max:20|regex:/^[0-9\+\-\s\(\)]+$/',
             'email' => 'required|email|max:255|unique:suppliers,email,' . $id,
-            'address' => 'required|string|max:500',
+            'address' => 'required|string|min:5|max:500',
             'supplier_type' => 'required|string|in:Supermarket,Farmer,Wholesaler,Individual',
             'is_actief' => 'sometimes|boolean',
             'opmerking' => 'nullable|string|max:1000',
+        ], [
+            'name.required' => 'Bedrijfsnaam is verplicht.',
+            'name.min' => 'Bedrijfsnaam moet minimaal 2 karakters bevatten.',
+            'name.max' => 'Bedrijfsnaam mag maximaal 255 karakters bevatten.',
+            'name.unique' => 'Een leverancier met deze naam bestaat al.',
+            'contact_person.required' => 'Contactpersoon is verplicht.',
+            'contact_person.min' => 'Contactpersoon moet minimaal 2 karakters bevatten.',
+            'contact_person.max' => 'Contactpersoon mag maximaal 255 karakters bevatten.',
+            'phone.required' => 'Telefoonnummer is verplicht.',
+            'phone.min' => 'Telefoonnummer moet minimaal 10 karakters bevatten.',
+            'phone.max' => 'Telefoonnummer mag maximaal 20 karakters bevatten.',
+            'phone.regex' => 'Telefoonnummer bevat ongeldige karakters.',
+            'email.required' => 'E-mailadres is verplicht.',
+            'email.email' => 'E-mailadres moet geldig zijn.',
+            'email.unique' => 'Een leverancier met dit e-mailadres bestaat al.',
+            'address.required' => 'Adres is verplicht.',
+            'address.min' => 'Adres moet minimaal 5 karakters bevatten.',
+            'address.max' => 'Adres mag maximaal 500 karakters bevatten.',
+            'supplier_type.required' => 'Leverancier type is verplicht.',
+            'supplier_type.in' => 'Geselecteerd leverancier type is ongeldig.',
+            'opmerking.max' => 'Opmerking mag maximaal 1000 karakters bevatten.',
         ]);
 
         try {
