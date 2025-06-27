@@ -15,6 +15,25 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-8 text-gray-900 dark:text-gray-100">
                     
+                    <!-- Developer Toggle Component -->
+                    <x-test.1-dev-toggle />
+                    
+                    <!-- Error Container (hidden by default) -->
+                    <div id="errorContainer" class="hidden mb-8">
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+                            <div class="flex justify-center mb-4">
+                                <svg class="w-12 h-12 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-semibold text-red-800 mb-2">Gegevens niet beschikbaar</h3>
+                            <p class="text-red-600">De klantgegevens zijn momenteel niet beschikbaar. Probeer het later opnieuw.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Data Container -->
+                    <div id="dataContainer">
+                    
                     <!-- Header with Status and Action Buttons -->
                     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-8 gap-4">
                         <div class="flex-1">
@@ -279,6 +298,8 @@
                             <p class="text-yellow-900 dark:text-yellow-100 leading-relaxed">{{ $customer->opmerking }}</p>
                         </div>
                     @endif
+
+                    </div> <!-- End Data Container -->
 
                 </div>
             </div>
