@@ -64,9 +64,9 @@
                     @if ($suppliers->count() > 0)
                         <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg mb-6">
                             <form method="GET" action="{{ route('suppliers.index') }}"
-                                class="flex flex-col sm:flex-row gap-4">
+                                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
                                 <!-- Search by name -->
-                                <div class="flex-1">
+                                <div class="lg:col-span-2">
                                     <label for="search"
                                         class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                         Zoek leverancier
@@ -88,7 +88,7 @@
                                 </div>
 
                                 <!-- Filter by supplier type -->
-                                <div class="sm:w-64">
+                                <div>
                                     <label for="supplier_type"
                                         class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                         Filter op type
@@ -115,10 +115,38 @@
                                     </select>
                                 </div>
 
+                                <!-- Filter by order status -->
+                                <div>
+                                    <label for="order_status"
+                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Bestelstatus
+                                    </label>
+                                    <select name="order_status" id="order_status"
+                                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="">Alle statussen</option>
+                                        <option value="actief"
+                                            {{ request('order_status') == 'actief' ? 'selected' : '' }}>
+                                            Actief (geen bestellingen)
+                                        </option>
+                                        <option value="onderweg"
+                                            {{ request('order_status') == 'onderweg' ? 'selected' : '' }}>
+                                            Onderweg
+                                        </option>
+                                        <option value="in_behandeling"
+                                            {{ request('order_status') == 'in_behandeling' ? 'selected' : '' }}>
+                                            In behandeling
+                                        </option>
+                                        {{-- <option value="geleverd"
+                                            {{ request('order_status') == 'geleverd' ? 'selected' : '' }}>
+                                            Geleverd
+                                        </option> --}}
+                                    </select>
+                                </div>
+
                                 <!-- Action buttons -->
-                                <div class="flex gap-2 sm:items-end sm:pb-0">
+                                <div class="md:col-span-2 lg:col-span-1 flex gap-2">
                                     <button type="submit"
-                                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors duration-200 flex items-center">
+                                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors duration-200 flex items-center flex-1 justify-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none"
                                             viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -126,9 +154,9 @@
                                         </svg>
                                         Zoeken
                                     </button>
-                                    @if (request('search') || request('supplier_type'))
+                                    @if (request('search') || request('supplier_type') || request('order_status'))
                                         <a href="{{ route('suppliers.index') }}"
-                                            class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition-colors duration-200 flex items-center">
+                                            class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition-colors duration-200 flex items-center flex-1 justify-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none"
                                                 viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -238,7 +266,7 @@
                                 <img src="{{ asset('svg/supplier.svg') }}" alt="Geen leveranciers"
                                     class="h-16 w-16 svg-filter-red opacity-70 transition-all duration-300 hover:scale-105">
                             </div>
-                            @if (request('search') || request('supplier_type'))
+                            @if (request('search') || request('supplier_type') || request('order_status'))
                                 <h3 class="mt-2 text-sm font-medium text-orange-600 dark:text-orange-400">Geen
                                     resultaten gevonden</h3>
                                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
