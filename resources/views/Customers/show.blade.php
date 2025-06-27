@@ -43,21 +43,37 @@
                                 @endif
                             </div>
                         </div>
+
+                        <div class="flex space-x-2">
+                             <x-test.button href="{{ route('customers.index') }}">
+                            Terug naar Overzicht
+                            </x-test.button>
+                             <x-test.button href="{{ route('customers.edit', $customer) }}" >
+                            Wijzig
+
                         <div class="flex flex-wrap gap-2">
                             <x-test.button href="{{ route('customers.index') }}">
                                 ← Terug naar Overzicht
                             </x-test.button>
                             <x-test.button href="{{ route('customers.edit', $customer) }}">
                                 ✏️ Wijzig
+
                             </x-test.button>
                             @if($customer->is_actief)
                                 <form method="POST" action="{{ route('customers.destroy', $customer) }}" class="inline">
                                     @csrf
                                     @method('DELETE')
+
+                                    <button type="submit" 
+                                            onclick="return confirm('Weet je zeker dat je deze klant wilt deactiveren?')">
+                                        <x-test.button>Verwijder</x-test.button>
+                                    </button>
+
                                     <x-test.button type="submit" 
                                             onclick="return confirm('Weet je zeker dat je deze klant wilt deactiveren?')">
                                         🗑️ Deactiveer
                                     </x-test.button>
+
                                 </form>
                             @else
                                 <form method="POST" action="{{ route('customers.restore', $customer) }}" class="inline">

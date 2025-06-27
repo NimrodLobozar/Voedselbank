@@ -43,6 +43,7 @@ class FoodstorageFactory extends Factory
             'temperature_min' => $tempRange['min'],
             'temperature_max' => $tempRange['max'],
             'storage_type' => $storageType,
+            'status' => $this->faker->randomElement(['onderweg', 'in_behandeling', 'geleverd']),
             'is_actief' => $this->faker->boolean(90),
             'opmerking' => $this->faker->optional(0.3)->sentence(),
             'datum_aangemaakt' => now(),
