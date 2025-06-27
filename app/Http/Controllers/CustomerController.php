@@ -19,6 +19,13 @@ class CustomerController extends Controller
         try {
             $customers = DB::select('CALL sp_GetCustomers()');
             
+
+            // Apply name search filter
+            if ($request->filled('name_search')) {
+                $search = strtolower($request->name_search);
+                $customers = array_filter($customers, function ($customer) use ($search) {
+                    return str_contains(strtolower($customer->full_name), $search);
+
             // Convert to collection for easier filtering
             $customers = collect($customers);
             
@@ -28,25 +35,40 @@ class CustomerController extends Controller
                 $customers = $customers->filter(function ($customer) use ($search) {
                     return str_contains(strtolower($customer->full_name), $search) ||
                            str_contains(strtolower($customer->full_address ?? ''), $search);
+
                 });
             }
             
             // Apply status filter
+
+            if ($request->filled('status_filter')) {
+                $status = (bool) $request->status_filter;
+                $customers = array_filter($customers, function ($customer) use ($status) {
+
             if ($request->filled('status_filter') && $request->status_filter !== '') {
                 $status = (bool) $request->status_filter;
                 $customers = $customers->filter(function ($customer) use ($status) {
+
                     return (bool) $customer->is_actief === $status;
                 });
             }
             
             // Apply household size filter
+
+            if ($request->filled('household_filter')) {
+                $householdFilter = $request->household_filter;
+                $customers = array_filter($customers, function ($customer) use ($householdFilter) {
+
             if ($request->filled('household_filter') && $request->household_filter !== '') {
                 $householdFilter = $request->household_filter;
                 $customers = $customers->filter(function ($customer) use ($householdFilter) {
+
                     if ($householdFilter === '5+') {
                         return $customer->household_size >= 5;
                     }
                     return $customer->household_size == $householdFilter;
+
+
                 });
             }
 
@@ -68,6 +90,7 @@ class CustomerController extends Controller
                         default:
                             return true;
                     }
+
                 });
             }
 
@@ -77,7 +100,11 @@ class CustomerController extends Controller
             return view('customers.index', compact('customers'));
         } catch (\Exception $e) {
             return view('customers.index', ['customers' => []])
+
+                ->withErrors(['error' => 'Er is een fout opgetreden bij het ophalen van klanten.']);
+
                 ->withErrors(['error' => 'Er is een fout opgetreden bij het ophalen van klanten: ' . $e->getMessage()]);
+
         }
     }
 
@@ -105,6 +132,13 @@ class CustomerController extends Controller
                 'password' => Hash::make($validated['password']),
             ]);
 
+
+            Customer::create(array_merge(
+                array_except($validated, ['name', 'email', 'password', 'password_confirmation']),
+                ['user_id' => $user->id, 'email' => $validated['customer_email'], 'is_actief' => true]
+            ));
+
+
             $customerData = $validated;
             unset($customerData['name'], $customerData['email'], $customerData['password'], $customerData['password_confirmation']);
             $customerData['user_id'] = $user->id;
@@ -112,6 +146,7 @@ class CustomerController extends Controller
             $customerData['is_actief'] = true;
 
             Customer::create($customerData);
+
 
             DB::commit();
             return redirect()->route('customers.index')->with('success', 'Klant is succesvol aangemaakt.');
@@ -135,6 +170,9 @@ class CustomerController extends Controller
                 return redirect()->route('customers.index')->withErrors(['error' => 'Klant niet gevonden.']);
             }
 
+
+            return view('customers.show', compact('customer', 'customerData'));
+
             // Get customer allergies
             $allergies = DB::table('customer_allergy')
                 ->join('allergy', 'customer_allergy.allergy_id', '=', 'allergy.id')
@@ -151,6 +189,7 @@ class CustomerController extends Controller
                 ->get();
 
             return view('customers.show', compact('customer', 'customerData', 'packageHistory', 'allergies', 'customAllergies'));
+
         } catch (\Exception $e) {
             return redirect()->route('customers.index')->withErrors(['error' => 'Er is een fout opgetreden bij het ophalen van klantgegevens.']);
         }
@@ -223,6 +262,10 @@ class CustomerController extends Controller
             'mobile' => 'required|string|max:20',
             'customer_email' => 'required|string|email|max:100',
             'household_size' => 'required|integer|min:1|max:20',
+
+            'income' => 'nullable|numeric|min:0|max:999999.99',
+            'registration_date' => 'required|date',
+
             'adults_count' => 'required|integer|min:0|max:20',
             'children_count' => 'required|integer|min:0|max:20',
             'babies_count' => 'required|integer|min:0|max:20',
@@ -231,6 +274,7 @@ class CustomerController extends Controller
             'no_pork' => 'boolean',
             'is_vegan' => 'boolean',
             'is_vegetarian' => 'boolean',
+
             'opmerking' => 'nullable|string|max:255',
         ];
 
@@ -239,7 +283,11 @@ class CustomerController extends Controller
             $rules['email'] = 'required|string|email|max:255|unique:users';
             $rules['password'] = 'required|string|min:8|confirmed';
         } else {
+
+            $rules['email'] = ['required', 'string', 'email', 'max:100', Rule::unique('customer', 'email')->ignore($customer->id)];
+
             $rules['customer_email'] = ['required', 'string', 'email', 'max:100', Rule::unique('customer', 'email')->ignore($customer->id)];
+
             $rules['is_actief'] = 'boolean';
         }
 

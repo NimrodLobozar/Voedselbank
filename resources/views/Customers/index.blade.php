@@ -39,10 +39,17 @@
 
                 <!-- Filter Section -->
                 <div class="flex flex-col lg:flex-row lg:justify-between gap-4">
+
+                    <div id="filterSection" class="{{ request('status_filter') || request('household_filter') ? '' : 'hidden' }} bg-gray-50 p-4 rounded-lg lg:max-w-2xl flex-1">
+                        <form method="GET" action="{{ route('customers.index') }}" class="space-y-4">
+                            <input type="hidden" name="name_search" value="{{ request('name_search') }}">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
                     <div id="filterSection" class="{{ request('status_filter') || request('household_filter') || request('dietary_filter') ? '' : 'hidden' }} bg-gray-50 p-4 rounded-lg lg:max-w-4xl flex-1">
                         <form method="GET" action="{{ route('customers.index') }}" class="space-y-4">
                             <input type="hidden" name="name_search" value="{{ request('name_search') }}">
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
                                     <select name="status_filter" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
@@ -63,6 +70,8 @@
                                     </select>
                                 </div>
 
+
+
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Dieetwensen</label>
                                     <select name="dietary_filter" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
@@ -73,13 +82,18 @@
                                         <option value="allergies" @selected(request('dietary_filter') == 'allergies')>Met allergieën</option>
                                     </select>
                                 </div>
+
                             </div>
 
                             <div class="flex gap-2">
                                 <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
                                     Filters toepassen
                                 </button>
+
+                                @if(request('name_search') || request('status_filter') || request('household_filter'))
+
                                 @if(request('name_search') || request('status_filter') || request('household_filter') || request('dietary_filter'))
+
                                     <a href="{{ route('customers.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600">
                                         Reset alle filters
                                     </a>
@@ -123,10 +137,20 @@
     <x-test.dev-toggle />
 </x-app-layout>
 
+
+@push('scripts')
+
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const filterIcon = document.getElementById('search-filter-icon');
     const filterSection = document.getElementById('filterSection');
+
+    const searchInput = document.querySelector('#search-main .search-input');
+
+    if (filterIcon) {
+        filterIcon.addEventListener('click', () => {
+
     const searchForm = document.getElementById('searchForm');
     const searchInput = searchForm ? searchForm.querySelector('.search-input') : null;
 
@@ -134,9 +158,62 @@ document.addEventListener('DOMContentLoaded', () => {
     if (filterIcon) {
         filterIcon.addEventListener('click', (e) => {
             e.preventDefault();
+
             filterSection.classList.toggle('hidden');
         });
     }
+
+
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const form = document.createElement('form');
+                form.method = 'GET';
+                form.action = '{{ route("customers.index") }}';
+
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'name_search';
+                input.value = this.value;
+
+                form.appendChild(input);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+});
+</script>
+@endpush
+
+@push('styles')
+<style>
+.toggle-dot {
+    transition: transform 0.2s ease-in-out;
+}
+
+.group:hover .group-hover\:scale-105 {
+    transform: scale(1.05);
+}
+
+/* Responsive card grid fallback */
+@media (max-width: 640px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
+@media (min-width: 641px) and (max-width: 768px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (min-width: 769px) and (max-width: 1024px) {
+    .grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+</style>
+@endpush
 
     // Handle search form submission on Enter key
     if (searchInput) {
@@ -184,3 +261,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 </script>
+
