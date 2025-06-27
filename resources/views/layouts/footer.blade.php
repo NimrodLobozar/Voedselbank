@@ -4,7 +4,7 @@
             <div>
                 <h3 class="text-gray-600 dark:text-gray-100 text-lg font-semibold mb-4">Voedselbank</h3>
                 <p class="text-sm text-gray-600 dark:text-gray-300">Voedselbank is een professionele
-                    rijschool die zich richt
+                    Voedselbank die zich richt
                     op het leveren van kwalitatief hoogwaardige rijopleiding. Wij streven ernaar om onze leerlingen op
                     een veilige en effectieve manier klaar te stomen voor het behalen van hun rijbewijs.</p>
             </div>
