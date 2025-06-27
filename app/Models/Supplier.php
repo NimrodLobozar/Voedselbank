@@ -24,6 +24,14 @@ class Supplier extends Model
     ];
 
     protected $casts = [
-        'active' => 'boolean',
+        'is_actief' => 'boolean',
     ];
+
+    /**
+     * Get the produce associated with the supplier.
+     */
+    public function produce()
+    {
+        return $this->hasMany(Produce::class);
+    }
 }
