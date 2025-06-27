@@ -45,11 +45,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/voedselpakketten/{food_package}/edit', [FoodPackageController::class, 'edit'])->name('food_packages.edit');
     Route::patch('/voedselpakketten/{food_package}', [FoodPackageController::class, 'update'])->name('food_packages.update');
     Route::delete('/voedselpakketten/{food_package}', [FoodPackageController::class, 'destroy'])->name('food_packages.destroy');
+
+    // Food storage routes moved inside auth middleware
+    Route::resource('foodstorage', FoodStorageController::class);
 });
 
 Route::post('/toggle-maintenance', [MaintenanceController::class, 'toggle'])->name('toggle.maintenance');
-
-// Vervang ProductController door FoodStorageController
-Route::resource('foodstorage', FoodStorageController::class);
 
 require __DIR__ . '/auth.php';
