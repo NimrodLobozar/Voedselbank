@@ -13,5 +13,7 @@
                 </div>
             </div>
         </div>
+        <!-- System Controls -->
+        <x-dashboard.system-controls :isMaintenanceMode="$isMaintenanceMode" />
     </div>
 </x-app-layout>
