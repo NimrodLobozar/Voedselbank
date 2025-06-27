@@ -117,6 +117,7 @@ return new class extends Migration {
             $table->decimal('temperature_min', 5, 2)->nullable();
             $table->decimal('temperature_max', 5, 2)->nullable();
             $table->enum('storage_type', ['Refrigerated', 'Frozen', 'Dry', 'Fresh'])->default('Dry');
+            $table->enum('status', ['onderweg', 'in_behandeling', 'geleverd'])->default('onderweg');
             $table->boolean('is_actief')->default(true);
             $table->string('opmerking', 255)->nullable();
             $table->timestamps();
@@ -150,8 +151,8 @@ return new class extends Migration {
             $table->boolean('is_actief')->default(true);
             $table->string('opmerking', 255)->nullable();
             $table->timestamps();
-            $table->dateTime('datum_aangemaakt', 6);
-            $table->dateTime('datum_gewijzigd', 6);
+            $table->dateTime('datum_aangemaakt', 6)->useCurrent();
+            $table->dateTime('datum_gewijzigd', 6)->useCurrent();
         });
 
         Schema::create('produce_allergy', function (Blueprint $table) {

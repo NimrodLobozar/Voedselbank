@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Produce extends Model
 {
@@ -21,33 +21,36 @@ class Produce extends Model
         'received_date',
         'amount',
         'unit',
-        'weight_per_unit'
+        'weight_per_unit',
+        'is_actief',
+        'opmerking',
+        'datum_aangemaakt',
+        'datum_gewijzigd'
     ];
 
     protected $casts = [
-        'expiry_date' => 'datetime',
-        'received_date' => 'datetime',
+        'is_actief' => 'boolean',
+        'expiry_date' => 'date',
+        'received_date' => 'date',
         'datum_aangemaakt' => 'datetime',
-        'datum_gewijzigd' => 'datetime'
+        'datum_gewijzigd' => 'datetime',
+        'weight_per_unit' => 'decimal:3',
     ];
-
-    public function foodStorage()
-    {
-        return $this->belongsTo(FoodStorage::class);
-    }
 
     public function supplier()
     {
         return $this->belongsTo(Supplier::class);
     }
 
-    public function isExpired()
+    public function foodStorage()
     {
-        return $this->expiry_date && $this->expiry_date->isPast();
+        return $this->belongsTo(FoodStorage::class);
     }
 
-    public function isExpiringSoon($days = 3)
+    public function foodPackages()
     {
-        return $this->expiry_date && $this->expiry_date->diffInDays(now()) <= $days;
+        return $this->belongsToMany(FoodPackage::class, 'food_package_produce')
+                    ->withPivot('quantity')
+                    ->withTimestamps();
     }
 }
